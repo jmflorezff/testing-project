@@ -1663,7 +1663,7 @@
 {DOI: \small\expandafter\printdoi\expandafter{\@doi}}} 
 \toappear{\fontsize{7pt}{8pt}\fontfamily{ptm}\selectfont
   \the\boilerplate\par\smallskip
- \the\copyrightetc}
+ }%\the\copyrightetc} %% No ISBN or DOI shown
 \fi
 \ifnum\ACM@basesize=10\relax
 \global\copyrightetc{%
