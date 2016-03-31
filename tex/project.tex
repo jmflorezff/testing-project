@@ -1,187 +1,28 @@
-% This is "sig-alternate.tex" V2.1 April 2013
-% This file should be compiled with V2.5 of "sig-alternate.cls" May 2012
-%
-% This example file demonstrates the use of the 'sig-alternate.cls'
-% V2.5 LaTeX2e document class file. It is for those submitting
-% articles to ACM Conference Proceedings WHO DO NOT WISH TO
-% STRICTLY ADHERE TO THE SIGS (PUBS-BOARD-ENDORSED) STYLE.
-% The 'sig-alternate.cls' file will produce a similar-looking,
-% albeit, 'tighter' paper resulting in, invariably, fewer pages.
-%
-% ----------------------------------------------------------------------------------------------------------------
-% This .tex file (and associated .cls V2.5) produces:
-%       1) The Permission Statement
-%       2) The Conference (location) Info information
-%       3) The Copyright Line with ACM data
-%       4) NO page numbers
-%
-% as against the acm_proc_article-sp.cls file which
-% DOES NOT produce 1) thru' 3) above.
-%
-% Using 'sig-alternate.cls' you have control, however, from within
-% the source .tex file, over both the CopyrightYear
-% (defaulted to 200X) and the ACM Copyright Data
-% (defaulted to X-XXXXX-XX-X/XX/XX).
-% e.g.
-% \CopyrightYear{2007} will cause 2007 to appear in the copyright line.
-% \crdata{0-12345-67-8/90/12} will cause 0-12345-67-8/90/12 to appear in the copyright line.
-%
-% ---------------------------------------------------------------------------------------------------------------
-% This .tex source is an example which *does* use
-% the .bib file (from which the .bbl file % is produced).
-% REMEMBER HOWEVER: After having produced the .bbl file,
-% and prior to final submission, you *NEED* to 'insert'
-% your .bbl file into your source .tex file so as to provide
-% ONE 'self-contained' source file.
-%
-% ================= IF YOU HAVE QUESTIONS =======================
-% Questions regarding the SIGS styles, SIGS policies and
-% procedures, Conferences etc. should be sent to
-% Adrienne Griscti (griscti@acm.org)
-%
-% Technical questions _only_ to
-% Gerald Murray (murray@hq.acm.org)
-% ===============================================================
-%
-% For tracking purposes - this is V2.0 - May 2012
-
 \documentclass{sig-alternate-05-2015}
-
 
 \begin{document}
 
-% Copyright
-%\setcopyright{acmcopyright}
-%\setcopyright{acmlicensed}
-%\setcopyright{rightsretained}
-%\setcopyright{usgov}
-%\setcopyright{usgovmixed}
-%\setcopyright{cagov}
-%\setcopyright{cagovmixed}
+\title{Software Testing, Validation and Verification Class Project Mid-Term Report}
 
+\numberofauthors{1}
 
-% DOI
-%\doi{10.475/123_4}
-
-% ISBN
-%\isbn{123-4567-24-567/08/06}
-
-%Conference
-%\conferenceinfo{PLDI '13}{June 16--19, 2013, Seattle, WA, USA}
-
-%\acmPrice{\$15.00}
-
-%
-% --- Author Metadata here ---
-%\conferenceinfo{WOODSTOCK}{'97 El Paso, Texas USA}
-%\CopyrightYear{2007} % Allows default copyright year (20XX) to be over-ridden - IF NEED BE.
-%\crdata{0-12345-67-8/90/01}  % Allows default copyright data (0-89791-88-6/97/05) to be over-ridden - IF NEED BE.
-% --- End of Author Metadata ---
-
-\title{Software Testing, Validation and Verification Class Project Proposal}
-%\subtitle{[Extended Abstract]
-%\titlenote{A full version of this paper is available as
-%\textit{Author's Guide to Preparing ACM SIG Proceedings Using
-%\LaTeX$2_\epsilon$\ and BibTeX} at
-%\texttt{www.acm.org/eaddress.htm}}}
-%
-% You need the command \numberofauthors to handle the 'placement
-% and alignment' of the authors beneath the title.
-%
-% For aesthetic reasons, we recommend 'three authors at a time'
-% i.e. three 'name/affiliation blocks' be placed beneath the title.
-%
-% NOTE: You are NOT restricted in how many 'rows' of
-% "name/affiliations" may appear. We just ask that you restrict
-% the number of 'columns' to three.
-%
-% Because of the available 'opening page real-estate'
-% we ask you to refrain from putting more than six authors
-% (two rows with three columns) beneath the article title.
-% More than six makes the first-page appear very cluttered indeed.
-%
-% Use the \alignauthor commands to handle the names
-% and affiliations for an 'aesthetic maximum' of six authors.
-% Add names, affiliations, addresses for
-% the seventh etc. author(s) as the argument for the
-% \additionalauthors command.
-% These 'additional authors' will be output/set for you
-% without further effort on your part as the last section in
-% the body of your article BEFORE References or any Appendices.
-
-\numberofauthors{2} %  in this sample file, there are a *total*
-% of EIGHT authors. SIX appear on the 'first-page' (for formatting
-% reasons) and the remaining two appear in the \additionalauthors section.
-%
 \author{
-% You can go ahead and credit any number of authors here,
-% e.g. one 'row of three' or two rows (consisting of one row of three
-% and a second row of one, two or three).
-%
-% The command \alignauthor (no curly braces needed) should
-% precede each author name, affiliation/snail-mail address and
-% e-mail address. Additionally, tag each line of
-% affiliation/address with \affaddr, and tag the
-% e-mail address with \email.
-%
-% 1st. author
 \alignauthor
-Juan Manuel Florez Fandino \\ %\titlenote{Dr.~Trovato insisted his name be first.}\\
+Juan Manuel Florez Fandino, Raul Quinonez Tirado \\ 
        \affaddr{University of Texas at Dallas}\\
        \affaddr{800 W. Campbell Road}\\
        \affaddr{Richardson, TX}\\
-       \email{jflorez@utdallas.edu}
-% 2nd. author
-\alignauthor
-Raul Quinonez Tirado \\ 
-       \affaddr{University of Texas at Dallas}\\
-       \affaddr{800 W. Campbell Road}\\
-       \affaddr{Richardson, TX}\\
-       \email{Rxq100020@utdallas.edu}
-%% 3rd. author
-%\alignauthor Lars Th{\o}rv{\"a}ld\titlenote{This author is the
-%one who did all the really hard work.}\\
-%       \affaddr{The Th{\o}rv{\"a}ld Group}\\
-%       \affaddr{1 Th{\o}rv{\"a}ld Circle}\\
-%       \affaddr{Hekla, Iceland}\\
-%       \email{larst@affiliation.org}
-%\and  % use '\and' if you need 'another row' of author names
-%% 4th. author
-%\alignauthor Lawrence P. Leipuner\\
-%       \affaddr{Brookhaven Laboratories}\\
-%       \affaddr{Brookhaven National Lab}\\
-%       \affaddr{P.O. Box 5000}\\
-%       \email{lleipuner@researchlabs.org}
-%% 5th. author
-%\alignauthor Sean Fogarty\\
-%       \affaddr{NASA Ames Research Center}\\
-%       \affaddr{Moffett Field}\\
-%       \affaddr{California 94035}\\
-%       \email{fogartys@amesres.org}
-%% 6th. author
-%\alignauthor Charles Palmer\\
-%       \affaddr{Palmer Research Laboratories}\\
-%       \affaddr{8600 Datapoint Drive}\\
-%       \affaddr{San Antonio, Texas 78229}\\
-%       \email{cpalmer@prl.com}
+       \email{\{jflorez, Rxq100020\}@utdallas.edu}
 }
-% There's nothing stopping you putting the seventh, eighth, etc.
-% author on the opening page (as the 'third row') but we ask,
-% for aesthetic reasons that you place these 'additional authors'
-% in the \additional authors block, viz.
-%\additionalauthors{Additional authors: John Smith (The Th{\o}rv{\"a}ld Group,
-%email: {\texttt{jsmith@affiliation.org}}) and Julius P.~Kumquat
-%(The Kumquat Consortium, email: {\texttt{jpkumquat@consortium.net}}).}
-%\date{30 July 1999}
-% Just remember to make sure that the TOTAL number of authors
-% is the number that will appear on the first page PLUS the
-% number that will appear in the \additionalauthors section.
 
 \maketitle
 \begin{abstract}
-It impossible to write software that is 100 percent fault free. Faults or bugs are an inevitable aspect of computer programming. While some tools at our disposal help identify all the syntax errors at compiling, identifying the semantic errors has proven to be more challenging. Debugging for semantic errors usually is a very tedious and time consuming activity. This is mainly due to the fact that a fault can originate at different locations in the code. In this project, we aim at addressing this issue by implementing an Information Retrieval (IR) system that will analyze the source code and upon the existence of a failure, it will identify the possible locations for the fault. 
+Faults or bugs are an inevitable aspect of computer programming. Bug reports are normally used to let developers know 
+there is an error in the code, but they rarely provide all the information necessary to determine where the bug must be 
+fixed at first glance. In this project, we aim at addressing this issue by implementing an Information Retrieval (IR) 
+system that will leverage the information found in bug reports to identify the possible locations in the source code 
+where the fault is located.
 \end{abstract}
-
 
 %
 % The code below should be generated by the tool at
@@ -229,55 +70,157 @@ It impossible to write software that is 100 percent fault free. Faults or bugs a
 %
 \printccsdesc
 
-% We no longer use \terms command
-%\terms{Theory}
-
 \keywords{Bug localization; information retrieval; corpus creation}
 
 \section{Introduction}
-The introduction
+Testing software products is one of the most important tasks in the software development cycle. Throughout the years, 
+several approaches have been developed in order to make this task easier and more effective. While most of the time 
+it is infeasible to do exhaustive testing on any piece of software, testing is usually carried out with the goal 
+of improving our confidence on the correctness of the code. Software that contains many faults is usually 
+considered of low-quality and undesirable and the goal of testing is to identify the largest number of faults 
+before the code is ready for release. Once software products are released, they need to be maintained for a 
+defined period of time. This highlights the importance of constantly debugging a piece of software. Several 
+techniques have been proposed in order to ease the debugging process. Information Retrieval is one of the 
+techniques used to localize bugs.
+
+The main goal of IR-based bug location systems is to locate bugs by taking as input a textual bug report and 
+a collection of source code files \cite{le2014}. The system then will output a ranked list of files of the 
+possible location of the bug. Developers will then look at the highest ranked locations for the bug first. 
+One problem that might arise is that sometimes the real cause for bugs is not correctly identified at the top of 
+the ranked list. With our implementation, we aim at improving the effectiveness of bug localization.
 
 \section{Problem}
-Identifying faulty methods in a software project using bug reports as input.
+Identifying faulty files in a software project using bug reports as input.
 
 \section{Background}
 
 \subsection{IR-Based Bug Localization}
-Information Retrieval (IR) can be defined as the process of finding material of an unstructured nature in a large collection to satisfy a certain information need \cite{manning2008:ir}. Even though source code is technically not unstructured text, IR-based approaches to bug localization have shown promising results over recent years \cite{zhou2012, poshyvanyk2007, saha2013}. The idea is that with some preprocessing, the source code of a certain version of a software product can be indexed and treated the same way as a large corpus of natural-language documents such as news articles or books. This allows stakeholders to query the codebase of a project using natural language and extract all kinds of information from it, provided that some conditions inherent to the particular problem domain are met. This has the notable advantage of being very easy to implement, but the main disadvantage of relying on the code containing adequately named identifiers and meaningful comments [ref?].
+Information Retrieval (IR) can be defined as the process of finding material of an unstructured nature in a large 
+collection to satisfy a certain information need \cite{manning2008}. The most widespread application of this discipline 
+is internet search engines. These allow efficient search over millions of different web pages with the information need 
+being presented in the form of a natural-language query by a user. IR usually operates on a \textit{corpus}, 
+i.e. a collection of documents which can be natural-language text such as books or news articles, but also 
+multimedia like images or videos, or any combination of these. The typical output of such a system is a ranked 
+subset of the corpus which hopefully contains the documents that are most relevant to the user's information 
+need among the first few entries.
+
+Even though source code is technically not unstructured text, IR-based approaches to bug localization have shown 
+promising results over recent years \cite{zhou2012, poshyvanyk2007, saha2013, rao2011, dit2013}. The idea is 
+that with some preprocessing, the source code of a certain version of a software product can be indexed and given 
+the same treatment as a corpus of natural-language documents. This allows stakeholders to query the codebase of 
+a project using natural language and extract all kinds of information from it. This has the notable advantage of 
+being very easy to implement, but the main disadvantage of relying on the code containing adequately named 
+identifiers and meaningful comments \cite{saha2014}.
+
+% Explain VSM and why.
 
 \subsection{Linking fixes in version history to issues in bug-tracking systems}
-\cite{dallmeier2007}
+IR approaches normally have to be empirically tested in order to assess their performance. This process is 
+normally carried out using special corpora for which some queries have been manually audited and all 
+(or a good part) of the relevant results for each one are known \cite{harman2011}. This also applies to the 
+field of automatic bug localization, in which we talk about a \textit{gold set}, i.e. a set of bug reports 
+connected to the related program elements that were modified to address each one. Even though some approaches 
+to automate this process have been proposed \cite{dallmeier2007}, they lack the precision to construct a 
+reasonably reliable gold set.
 
-\section{Implementation Plan}
-We propose the implementation of a technique for bug-localization using IR. The general steps for such approach are outlined next.
-First, it is necessary to index the source code in order to enable efficient search over it. For this, some preprocessing must be applied to the source files:
+The method that most of these approaches propose is \cite{sliwerski2005}:
 \begin{enumerate}
-\item Split source classes into methods, and index each one as a separate document.
-\item Extract comments, literal strings, …, and identifiers from each method.
-\item Apply identifier splitting \cite{saha2013}.
-\item Elimination of stop words and language-specific keywords.
-\item Stemming.
+	\item Begin with the change history of a software project and the bug-tracking system for the project.
+	A bug tracker is not necessary but it help increase the confidence in extracted candidate bug fixes.
+	
+	\item Examine the commit messages for the software release being considered and extract anything resembling
+	an issue identifier. The specific format of these depends on the specific bug-tracking system used by the
+	project, and could be simply a number, a URL or a string like \emph{PROJECT-0000} as is the case with
+	Apache projects.
+	
+	\item Increase the confidence of the candidate bug ids extracted by querying the version control system.
+	If the issue is marked as fixed or assigned to a developer, the confidence level for the candidate bug
+	fix increases. Similarly,
+	if the issue contains attachments referencing the files being committed, confidence increases.
 \end{enumerate}
 
-Once the index is formed the next step is building a query processor. In our case, the queries are bug reports posted on a bug-tracking system, and they normally consist of title and description. The same process outlined above is applied to both fields, and an information retrieval system such as lucene is used to rank the documents in order of descending relevance.
+The main problem of this kind of approach is that they report a considerable number of false positives, since
+potentially any number included in a commit message for other reasons could be interpreted as an issue id
+if it exists in the bug-tracking system by chance. Additionally, not all fixed bugs get marked as such in these
+systems, and some of them get fixed without explicitly being assigned to a developer.
 
-We will also implement a functionality to extract the gold set from a repository \cite{dallmeier2007}.
+\section{Implementation Plan}
+We propose the reimplementation for bug-localization tool known as BugLocator \cite{zhou2012}. This tool uses IR
+methods to locate bugs in a codebase using bug reports as input. The tool also leverages document length and
+previous recorded bug fixes to improve the results. The idea behind this is that long code files are more likely
+to contain bugs than shorter files, and files that have been fixed before are similarly more likely to contain
+defects than those that haven't been modified as much. The technique uses file-level granularity, i.e. given
+a bug report, the result will be a ranked list of source files.
+
+As it is true for most IR applications, it is necessary to index the source code in order to enable efficient 
+search over it. For this, some preprocessing must be applied to the source files:
+
+\begin{enumerate}
+	\item First, the correct versions for the software project under study must be selected. The gold set will be
+	collected for one or more versions of the source code. Since it only makes sense to look for a bug in the version
+	in which it was reported, these different versions must be identified and used separately.
+	
+	\item Since the chosen granularity chosen for this application is file-level, the following step is iterating through
+	the project source files and applying the next steps.
+	
+	\item Extract comments, literal strings and identifiers from each file. A parser for the particular programming
+	language is not mandatory but will help identify these elements unambiguously. It is necessary to ignore reserved 
+	words of the language and programming tokens such as \texttt{\{} since these don't contain any semantic information
+	that would boost search performance.
+	
+	\item Apply identifier splitting. This process consists in recognizing composite identifiers such as 
+	\texttt{threadExecutor} and splitting them into their constituent words, in this case \texttt{thread} and 
+	\texttt{executor}. The original identifier is kept as well, since this has been shown to improve search effectiveness
+	\cite{saha2013}.
+	
+	\item Eliminate stop words. These are words that don't contain meaningful information from the perspective of IR, 
+	such as conjunctions, pronouns and articles (\textit{for}, \textit{about}, \textit{it}, etc.) This is because they
+	appear in most documents, meaning they don't contain a lot of information from the perspective of information theory.
+	
+	\item Apply stemming. This is a process that reduces words to their base form, e.g. ``implementing'' and 
+	``implementation'' get 	reduced to ``implement''. This helps reducing the amount of possible terms for searching and
+	has been shown to increase performance \cite{saha2013}. The Porter stemmer is a popular choice for this process 
+	\cite{porter1980}.
+	
+	\item An IR tool such as Lucene\footnote{https://lucene.apache.org/} is then used to store the processed representation
+	of each source file to allow efficient search over the whole corpus.
+\end{enumerate}
+
+Once the index is formed the next step is building a query processor. In our case, the queries are bug reports posted 
+on a bug-tracking system, and they normally consist of title and description. The same process outlined above, excluding 
+the first three steps, is applied to both fields and an information retrieval system such as Lucene is used to rank the 
+documents in order of descending relevance.
+
+Relevance calculation is the step that will really determine the effectiveness of our implementation. Three different
+attributes will be used for this process: textual similarity, file length and similar bugs.
+
+\subsection{Textual Similarity}
+In the VSM model, a source file is represented as a vector in which each dimension represents a term in the corpus, and
+its value is the amount of times that term appears in the document. For example, if we have a corpus consisting of the
+terms $\{\text{black}, \text{funny}, \text{sheep}, \text{cat}\}$ and a document $d=\{\text{black}, \text{cat}, \text{funny},
+\text{cat}\}$, the vector representation for this document will be $V_d = (1, 1, 0, 2)$. When comparing two vector
+representations, in our case those referring to a bug report and a source file, simply calculating the distance
+between the two points might not be the best approach \cite{manning2008}. A technique called \textit{tf-idf} is
+widely used in the IR field, and it consists on calculating the angle between the two vectors. This helps reduce the
+bias towards longer documents, which is a big problem when using only euclidean distance.
+
+\subsection{File length}
+
+\subsection{Similar bugs}
 
 \section{Experimental Design}
-We will collect a gold set from at least 10 open source software projects. We will apply the technique splitting each query in title only, description only and both title and description. We will compare the performance on each system with IR metrics \cite{saha2013} and draw some conclusions by manually analyzing some of the results.
+After the IR approach is implemented, it will be empirically tested on at least 5 open source software projects. 
+For this, a gold set will be manually collected both from existing data and by making use of version history 
+repositories and bug-tracking systems.
 
-%
-% The following two commands are all you need in the
-% initial runs of your .tex file to
-% produce the bibliography for the citations in your paper.
+The implemented IR approach will be tested by performing search over the indexed source code using each query 
+(bug report) differentiating between the results obtained using only the title of the bug report as a query, using 
+only the description and using both. The results will be evaluated using some widely used IR metrics 
+\cite{saha2013, manning2008}. With these results, a comprehensive analysis of the strengths and weaknesses of 
+the approach will be carried out, which will allow us to propose candidates for future work.
+
 \bibliographystyle{abbrv}
-\bibliography{project}  % sigproc.bib is the name of the Bibliography in this case
-% You must have a proper ".bib" file
-%  and remember to run:
-% latex bibtex latex latex
-% to resolve all references
-%
-% ACM needs 'a single self-contained file'!
+\bibliography{project}
 \balancecolumns
 
 \end{document}
