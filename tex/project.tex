@@ -210,8 +210,10 @@ bias towards longer documents, which is a big problem when using only euclidean 
 
 \section{Experimental Design}
 After the IR approach is implemented, it will be empirically tested on at least 5 open source software projects. 
-For this, a gold set will be manually collected both from existing data and by making use of version history 
-repositories and bug-tracking systems.
+A starting gold set has been acquired. It contains 424 bug reports in total, extracted manually from 9 open
+source projects: BookKeeper, Derby, Lucene, Mahout, OpenJPA, Pig, Solr, Tika and Zookeeper, all of them developed
+by The Apache Software Foundation\footnote{http://www.apache.org/}. Some of the projects have only a few data
+points, this is why we will add more, attempting to have a comparable amount of bug reports for each system.
 
 The implemented IR approach will be tested by performing search over the indexed source code using each query 
 (bug report) differentiating between the results obtained using only the title of the bug report as a query, using 
