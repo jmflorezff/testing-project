@@ -96,7 +96,7 @@ Identifying faulty files in a software project using bug reports as input.
 
 \subsection{IR-Based Bug Localization}
 Information Retrieval (IR) can be defined as the process of finding material of an unstructured nature in a large 
-collection to satisfy a certain information need \cite{manning2008}. The most widespread application of this discipline 
+collection to satisfy a certain information need \cite{manning2008}. One known application of this discipline 
 is internet search engines. These allow efficient search over millions of different web pages with the information need 
 being presented in the form of a natural-language query by a user. IR usually operates on a \textit{corpus}, 
 i.e. a collection of documents which can be natural-language text such as books or news articles, but also 
@@ -200,13 +200,42 @@ its value is the amount of times that term appears in the document. For example,
 terms $\{\text{black}, \text{funny}, \text{sheep}, \text{cat}\}$ and a document $d=\{\text{black}, \text{cat}, \text{funny},
 \text{cat}\}$, the vector representation for this document will be $V_d = (1, 1, 0, 2)$. When comparing two vector
 representations, in our case those referring to a bug report and a source file, simply calculating the distance
-between the two points might not be the best approach \cite{manning2008}. A technique called \textit{tf-idf} is
+between the two points might not be the best approach \cite{manning2008}. Cosine similarity is
 widely used in the IR field, and it consists on calculating the angle between the two vectors. This helps reduce the
 bias towards longer documents, which is a big problem when using only euclidean distance.
 
+A weighting scheme known as \textit{tf-idf} can be used to augment cosine similarity. The rationale behind this method is
+that not all terms in a corpus will have the same discriminating power. For instance, if a term is present in only one
+document in the corpus, it could be assumed that it is a very specific term, and if it appears in a query, it is very
+likely that the only document containing it will be relevant. On the other hand, if a term appears in every document in
+the corpus, it will be difficult to rank the results based solely on it. Similarly, if a term appears many times in an
+individual document, we can infer that the topic of that document is strongly related to that term.
+
+Using this assumption we define two concepts: \textit{term frequency (tf)} and \textit{inverse document frequency (idf)}.
+These values are calculated as follows:
+
+\begin{equation}
+	\text{tf}(t, d) = \log ({f_{\text{td}}})
+\end{equation}
+
+\begin{equation}
+	\text{idf}(t, d) = \log \left( \frac{|D|}{n_t} \right) 
+\end{equation}
+
+Where $t$ represents a term, $d$ is a document, $f_{\text{td}}$ is the amount of times term $t$ appears in document $d$,
+$|D|$ is the amount of documents in the corpus, and $n_t$ is the amount of documents in the corpus that contain term $t$.
+The logarithms help dampen the effect of differences in document length even further. In this way we can define
+\textit{tf-idf} as:
+
+\begin{equation}
+	\text{tf-idf}(t, d) = \text{tf}(t, d) \times \text{idf}(t, d)
+\end{equation}
+
 \subsection{File length}
+% This is in the paper
 
 \subsection{Similar bugs}
+% Is in the paper
 
 \section{Experimental Design}
 After the IR approach is implemented, it will be empirically tested on at least 5 open source software projects. 
@@ -220,6 +249,8 @@ The implemented IR approach will be tested by performing search over the indexed
 only the description and using both. The results will be evaluated using some widely used IR metrics 
 \cite{saha2013, manning2008}. With these results, a comprehensive analysis of the strengths and weaknesses of 
 the approach will be carried out, which will allow us to propose candidates for future work.
+
+% Elaborate
 
 \bibliographystyle{abbrv}
 \bibliography{project}
