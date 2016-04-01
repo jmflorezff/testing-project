@@ -73,21 +73,27 @@ where the fault is located.
 \keywords{Bug localization; information retrieval; corpus creation}
 
 \section{Introduction}
-Testing software products is one of the most important tasks in the software development cycle. Throughout the years, 
-several approaches have been developed in order to make this task easier and more effective. While most of the time 
-it is infeasible to do exhaustive testing on any piece of software, testing is usually carried out with the goal 
-of improving our confidence on the correctness of the code. Software that contains many faults is usually 
-considered of low-quality and undesirable and the goal of testing is to identify the largest number of faults 
-before the code is ready for release. Once software products are released, they need to be maintained for a 
-defined period of time. This highlights the importance of constantly debugging a piece of software. Several 
-techniques have been proposed in order to ease the debugging process. Information Retrieval is one of the 
-techniques used to localize bugs.
+Due to the inherent complexity of software products, the occurrence of bugs is inevitable. Many different methods
+are used to prevent and repair faults in source code. However, on occasion these faults are not identified during
+testing, instead being uncovered by the final users. Bug reports are used by both open source communities and
+software development companies, and they allow users  to communicate software failures to the development team.
+These reports are usually submitted by making use of a bug-tracking system.
+Once a bug report is received the usual process starts by assessing the severity of the bug and then assigning a
+developer or group of developers the task of locating and fixing the bug.
 
-The main goal of IR-based bug location systems is to locate bugs by taking as input a textual bug report and 
-a collection of source code files \cite{le2014}. The system then will output a ranked list of files of the 
-possible location of the bug. Developers will then look at the highest ranked locations for the bug first. 
-One problem that might arise is that sometimes the real cause for bugs is not correctly identified at the top of 
-the ranked list. With our implementation, we aim at improving the effectiveness of bug localization.
+However, locating bugs is usually not a straightforward process. Software systems that have the need of using
+bug-tracking systems are usually too complex for any one person to identify the possible location of a bug at a
+glance. Manually searching through the source code files would be a prohibitively time-consuming in addition to
+being error-prone. This is why many approaches for automated bug localization have been proposed. % REF?
+
+Some of these approaches exploit the fact that source code is essentially text to allow search over code bases the
+same way search over natural-language texts would be carried out. Information retrieval (IR) is the discipline
+that studies search over corpora of unstructured data, and these approaches apply techniques born in this
+field of study to bug localization.
+One of the ways of locating software faults using IR is using a textual bug report and 
+a collection of source code files \cite{le2014}. The system then will output a ranked list of files where
+the bug is likely to be located. Developers will then look at the highest ranked locations for the bug first. 
+Our goal for this project is to test a particular approach on a set of bug reports collected by our team.
 
 \section{Problem}
 Identifying faulty files in a software project using bug reports as input.
@@ -98,7 +104,7 @@ Identifying faulty files in a software project using bug reports as input.
 Information Retrieval (IR) can be defined as the process of finding material of an unstructured nature in a large 
 collection to satisfy a certain information need \cite{manning2008}. One known application of this discipline 
 is internet search engines. These allow efficient search over millions of different web pages with the information need 
-being presented in the form of a natural-language query by a user. IR usually operates on a \textit{corpus}, 
+being presented in the form of a natural-language \textit{query} by a user. IR usually operates on a \textit{corpus}, 
 i.e. a collection of documents which can be natural-language text such as books or news articles, but also 
 multimedia like images or videos, or any combination of these. The typical output of such a system is a ranked 
 subset of the corpus which hopefully contains the documents that are most relevant to the user's information 
@@ -112,6 +118,9 @@ a project using natural language and extract all kinds of information from it. T
 being very easy to implement, but the main disadvantage of relying on the code containing adequately named 
 identifiers and meaningful comments \cite{saha2014}.
 
+Most IR-based bug localization techniques use bug reports as queries. Some of them use additional information to
+improve ranking performance, such as stack traces or dynamic data. % Ref?
+
 % Explain VSM and why.
 
 \subsection{Linking fixes in version history to issues in bug-tracking systems}
@@ -119,9 +128,9 @@ IR approaches normally have to be empirically tested in order to assess their pe
 normally carried out using special corpora for which some queries have been manually audited and all 
 (or a good part) of the relevant results for each one are known \cite{harman2011}. This also applies to the 
 field of automatic bug localization, in which we talk about a \textit{gold set}, i.e. a set of bug reports 
-connected to the related program elements that were modified to address each one. Even though some approaches 
-to automate this process have been proposed \cite{dallmeier2007}, they lack the precision to construct a 
-reasonably reliable gold set.
+connected to the related program elements that were modified to address each one, or \textit{fix set}.
+Even though some approaches to automate this process have been proposed \cite{dallmeier2007}, they lack
+the precision to construct a reasonably reliable gold set.
 
 The method that most of these approaches propose is \cite{sliwerski2005}:
 \begin{enumerate}
@@ -135,8 +144,8 @@ The method that most of these approaches propose is \cite{sliwerski2005}:
 	
 	\item Increase the confidence of the candidate bug ids extracted by querying the version control system.
 	If the issue is marked as fixed or assigned to a developer, the confidence level for the candidate bug
-	fix increases. Similarly,
-	if the issue contains attachments referencing the files being committed, confidence increases.
+	fix increases. Similarly, if the issue contains attachments referencing the files being committed,
+	confidence increases.
 \end{enumerate}
 
 The main problem of this kind of approach is that they report a considerable number of false positives, since
@@ -146,10 +155,10 @@ systems, and some of them get fixed without explicitly being assigned to a devel
 
 \section{Implementation Plan}
 We propose the reimplementation for bug-localization tool known as BugLocator \cite{zhou2012}. This tool uses IR
-methods to locate bugs in a codebase using bug reports as input. The tool also leverages document length and
+methods to locate bugs in a code base using bug reports as input. The tool also leverages document length and
 previous recorded bug fixes to improve the results. The idea behind this is that long code files are more likely
 to contain bugs than shorter files, and files that have been fixed before are similarly more likely to contain
-defects than those that haven't been modified as much. The technique uses file-level granularity, i.e. given
+defects than those that haven't been modified as much. The technique uses file-level granularity, i.e. given %Ref
 a bug report, the result will be a ranked list of source files.
 
 As it is true for most IR applications, it is necessary to index the source code in order to enable efficient 
@@ -170,12 +179,13 @@ search over it. For this, some preprocessing must be applied to the source files
 	
 	\item Apply identifier splitting. This process consists in recognizing composite identifiers such as 
 	\texttt{threadExecutor} and splitting them into their constituent words, in this case \texttt{thread} and 
-	\texttt{executor}. The original identifier is kept as well, since this has been shown to improve search effectiveness
-	\cite{saha2013}.
+	\texttt{executor}. The original identifier is kept as well, since this has been shown to improve search
+	effectiveness \cite{saha2013}.
 	
 	\item Eliminate stop words. These are words that don't contain meaningful information from the perspective of IR, 
 	such as conjunctions, pronouns and articles (\textit{for}, \textit{about}, \textit{it}, etc.) This is because they
-	appear in most documents, meaning they don't contain a lot of information from the perspective of information theory.
+	appear in most documents, which from the perspective of information theory means they don't carry much
+	information.
 	
 	\item Apply stemming. This is a process that reduces words to their base form, e.g. ``implementing'' and 
 	``implementation'' get 	reduced to ``implement''. This helps reducing the amount of possible terms for searching and
@@ -192,19 +202,29 @@ the first three steps, is applied to both fields and an information retrieval sy
 documents in order of descending relevance.
 
 Relevance calculation is the step that will really determine the effectiveness of our implementation. Three different
-attributes will be used for this process: textual similarity, file length and similar bugs.
+values will be used for this process: textual similarity, file length and similar bugs. The way these values are computed
+is presented next.
 
 \subsection{Textual Similarity}
-In the VSM model, a source file is represented as a vector in which each dimension represents a term in the corpus, and
+In the Vector Space Model, a source file is represented as a vector in which each dimension represents a term in
+the corpus, and
 its value is the amount of times that term appears in the document. For example, if we have a corpus consisting of the
 terms $\{\text{black}, \text{funny}, \text{sheep}, \text{cat}\}$ and a document $d=\{\text{black}, \text{cat}, \text{funny},
 \text{cat}\}$, the vector representation for this document will be $V_d = (1, 1, 0, 2)$. When comparing two vector
 representations, in our case those referring to a bug report and a source file, simply calculating the distance
 between the two points might not be the best approach \cite{manning2008}. Cosine similarity is
 widely used in the IR field, and it consists on calculating the angle between the two vectors. This helps reduce the
-bias towards longer documents, which is a big problem when using only euclidean distance.
+bias towards longer documents, which is a big problem when using only euclidean distance. It is calculated as follows:
 
-A weighting scheme known as \textit{tf-idf} can be used to augment cosine similarity. The rationale behind this method is
+\begin{equation}
+	S(q, d) = \cos(q, d) = \frac{\vec{V_q} \cdot \vec{V_d}}{|\vec{V_q}| |\vec{V_d}|}
+	\label{similarity}
+\end{equation}
+
+In this equation, $q$ and $d$ are respectively a query and a document, and $\vec{V_q}$, $\vec{V_d}$ are their respective
+vector representations.
+
+A weighting scheme known as \textit{tf-idf} can be used to rank the results of a query. The rationale behind this method is
 that not all terms in a corpus will have the same discriminating power. For instance, if a term is present in only one
 document in the corpus, it could be assumed that it is a very specific term, and if it appears in a query, it is very
 likely that the only document containing it will be relevant. On the other hand, if a term appears in every document in
@@ -232,25 +252,72 @@ The logarithms help dampen the effect of differences in document length even fur
 \end{equation}
 
 \subsection{File length}
-% This is in the paper
+To also include file length in the ranking calculation, the following equation is defined:
+
+\begin{equation}
+	g(d)= \frac{1}{1 + e ^ {-N(|d|)}}
+\end{equation}
+
+Where $|d|$ is the number of terms in the document. This function assigns higher scores to longer files. The value of $n$
+is normalized using the following function:
+
+\begin{equation}
+	N(x) = \frac{x - x_\text{min}}{x_\text{max} - x_\text{min}}
+\end{equation}
+
+In which $x_\text{min}$ and $x_\text{max}$ are the lengths of the shortest and longest documents in the corpus,
+respectively.
 
 \subsection{Similar bugs}
-% Is in the paper
+The results will also be augmented with information from previously fixed bug reports. For this, we consider a bug
+$B$ as a query, then we collect a set $P$ of previously fixed bugs and a set $F$ of the files fixed to address
+these bugs. The documents in $P$ are all of those that have a non-zero similarity value with the current bug being
+considered, calculated using equation \ref{similarity}. For every document $f$ in $F$ we calculate:
+
+\begin{equation}
+	\text{SScore} = \sum_{P_i \in R(f)} \frac{S(B, P_i)}{n_i}
+\end{equation}
+
+Where $S$ is the similarity score defined in equation \ref{similarity}, $R(f)$ is the set of bug reports that include
+$f$ in their fix set and $n_i$ is the amount of files in the fix set of $P_i$ .
 
 \section{Experimental Design}
-After the IR approach is implemented, it will be empirically tested on at least 5 open source software projects. 
+After the IR approach is implemented, it will be empirically tested on some open source software projects. 
 A starting gold set has been acquired. It contains 424 bug reports in total, extracted manually from 9 open
 source projects: BookKeeper, Derby, Lucene, Mahout, OpenJPA, Pig, Solr, Tika and Zookeeper, all of them developed
 by The Apache Software Foundation\footnote{http://www.apache.org/}. Some of the projects have only a few data
-points, this is why we will add more, attempting to have a comparable amount of bug reports for each system.
+points, so we intend to add more, attempting to have a comparable amount of bug reports for each system.
 
 The implemented IR approach will be tested by performing search over the indexed source code using each query 
 (bug report) differentiating between the results obtained using only the title of the bug report as a query, using 
-only the description and using both. The results will be evaluated using some widely used IR metrics 
-\cite{saha2013, manning2008}. With these results, a comprehensive analysis of the strengths and weaknesses of 
-the approach will be carried out, which will allow us to propose candidates for future work.
+only the description and using both. The results will be evaluated using the following IR metrics
+\cite{saha2013, manning2008}:
 
-% Elaborate
+\begin{itemize}
+	\item Precision, which is the ratio of relevant documents retrieved out of the total amount of documents
+	retrieved for a query.
+	
+	\item Recall, which refers to the ratio of relevant documents retrieved to the total number of relevant
+	documents in the corpus for a query.
+	
+	\item Top $N$ Rank is the amount of bugs for which at least one of their relevant documents can be found
+	within the top $N$ results where $N=1,5,10$. We will consider the bug located if at least one file from the
+	relevant set of each query is present in the results.
+	
+	\item Reciprocal Rank is the multiplicative inverse of the rank of the first relevant document in a result
+	set for a particular query. Evidently, it is desirable for this value to be close to $1$.
+	
+	\item Average Precision is used to get an overview of the performance of the system for a result list when
+	the query has multiple relevant documents. It is calculated with the following function:
+	\begin{equation}
+		\text{AvgP} = \frac{\sum_{k=1}^{n} (P(k) \times pos(k))}{r}
+	\end{equation}
+	Where $n$ is the amount of documents retrieved, $P(k)$ is the precision at rank $k$, $r$ is the amount of relevant
+	documents in the corpus and $pos(k)$ is $1$ if the document at position $k$ is relevant and $0$ otherwise.
+\end{itemize}
+
+With these results, a comprehensive analysis of the strengths and weaknesses of 
+the approach will be carried out, which will allow us to propose candidates for future work.
 
 \bibliographystyle{abbrv}
 \bibliography{project}
