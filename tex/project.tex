@@ -126,7 +126,8 @@ improve ranking performance, such as stack traces or dynamic data. % Ref?
 \subsection{Linking fixes in version history to issues in bug-tracking systems}
 IR approaches normally have to be empirically tested in order to assess their performance. This process is 
 normally carried out using special corpora for which some queries have been manually audited and all 
-(or a good part) of the relevant results for each one are known \cite{harman2011}. This also applies to the 
+(or a good part) of the relevant results for each one are known \cite{harman2011}. 
+The text corpora is then used to implement the statistical analysis.This also applies to the 
 field of automatic bug localization, in which we talk about a \textit{gold set}, i.e. a set of bug reports 
 connected to the related program elements that were modified to address each one, or \textit{fix set}.
 Even though some approaches to automate this process have been proposed \cite{dallmeier2007}, they lack
@@ -148,7 +149,7 @@ The method that most of these approaches propose is \cite{sliwerski2005}:
 	confidence increases.
 \end{enumerate}
 
-The main problem of this kind of approach is that they report a considerable number of false positives, since
+ As stated before, the reports will be collected from known bug tracking system such as BugZilla and JIRA. These reports will only contain reports of bugs that have been fixed and its location is already known. This will help us to evaluate our performance.However, the main problem of this kind of approach is that they report a considerable number of false positives, since
 potentially any number included in a commit message for other reasons could be interpreted as an issue id
 if it exists in the bug-tracking system by chance. Additionally, not all fixed bugs get marked as such in these
 systems, and some of them get fixed without explicitly being assigned to a developer.
@@ -252,7 +253,8 @@ The logarithms help dampen the effect of differences in document length even fur
 \end{equation}
 
 \subsection{File length}
-To also include file length in the ranking calculation, the following equation is defined:
+As stated before, the size of the file does contribute to the probability of it containing the bug. In the case of having two files with the similar scores, the length of the file will be used in order to resolve conflicts.   
+To include file length in the ranking calculation, the following equation is defined:
 
 \begin{equation}
 	g(d)= \frac{1}{1 + e ^ {-N(|d|)}}
@@ -269,6 +271,7 @@ In which $x_\text{min}$ and $x_\text{max}$ are the lengths of the shortest and l
 respectively.
 
 \subsection{Similar bugs}
+Similar bugs will also be taken into account in order to improve the ranking system. This follows the idea that bugs that produce the same or similar erroneous behavior tend to be located in the same files. 
 The results will also be augmented with information from previously fixed bug reports. For this, we consider a bug
 $B$ as a query, then we collect a set $P$ of previously fixed bugs and a set $F$ of the files fixed to address
 these bugs. The documents in $P$ are all of those that have a non-zero similarity value with the current bug being
@@ -279,7 +282,7 @@ considered, calculated using equation \ref{similarity}. For every document $f$ i
 \end{equation}
 
 Where $S$ is the similarity score defined in equation \ref{similarity}, $R(f)$ is the set of bug reports that include
-$f$ in their fix set and $n_i$ is the amount of files in the fix set of $P_i$ .
+$f$ in their fix set and $n_i$ is the amount of files in the fix set of $P_i$. This information is used to improve the location of bugs that have been previously identified in specif files.
 
 \section{Experimental Design}
 After the IR approach is implemented, it will be empirically tested on some open source software projects. 
@@ -316,7 +319,8 @@ only the description and using both. The results will be evaluated using the fol
 	documents in the corpus and $pos(k)$ is $1$ if the document at position $k$ is relevant and $0$ otherwise.
 \end{itemize}
 
-With these results, a comprehensive analysis of the strengths and weaknesses of 
+\section{Conclusion}
+With our implementation, we aim at developing a tool for bug localization at the file level that takes as input bug reports. This implementation follows a similar technique used in already known tools such as BugLocator. We will also test the effectiveness of our tool with 9 open source projects and 424 bugs reports already acquired and report future course of action. With these results, a comprehensive analysis of the strengths and weaknesses of 
 the approach will be carried out, which will allow us to propose candidates for future work.
 
 \bibliographystyle{abbrv}
