@@ -82,8 +82,9 @@ Once a bug report is received the usual process starts by assessing the severity
 developer or group of developers the task of locating and fixing the bug.
 
 However, locating bugs is usually not a straightforward process. Software systems that have the need of using
-bug-tracking systems are usually too complex for any one person to identify the possible location of a bug at a
-glance. Manually searching through the source code files would be a prohibitively time-consuming in addition to
+bug-tracking systems are usually too complex for any one person to be able to identify the possible location
+of a bug at first
+glance. Manually searching through the source code files would be prohibitively time-consuming in addition to
 being error-prone. This is why many approaches for automated bug localization have been proposed. % REF?
 
 Some of these approaches exploit the fact that source code is essentially text to allow search over code bases the
@@ -127,7 +128,7 @@ improve ranking performance, such as stack traces or dynamic data. % Ref?
 IR approaches normally have to be empirically tested in order to assess their performance. This process is 
 normally carried out using special corpora for which some queries have been manually audited and all 
 (or a good part) of the relevant results for each one are known \cite{harman2011}. 
-The text corpora is then used to implement the statistical analysis.This also applies to the 
+This also applies to the 
 field of automatic bug localization, in which we talk about a \textit{gold set}, i.e. a set of bug reports 
 connected to the related program elements that were modified to address each one, or \textit{fix set}.
 Even though some approaches to automate this process have been proposed \cite{dallmeier2007}, they lack
@@ -149,7 +150,7 @@ The method that most of these approaches propose is \cite{sliwerski2005}:
 	confidence increases.
 \end{enumerate}
 
- As stated before, the reports will be collected from known bug tracking system such as BugZilla and JIRA. These reports will only contain reports of bugs that have been fixed and its location is already known. This will help us to evaluate our performance.However, the main problem of this kind of approach is that they report a considerable number of false positives, since
+However, the main problem of this kind of approach is that they report a considerable number of false positives, since
 potentially any number included in a commit message for other reasons could be interpreted as an issue id
 if it exists in the bug-tracking system by chance. Additionally, not all fixed bugs get marked as such in these
 systems, and some of them get fixed without explicitly being assigned to a developer.
@@ -200,7 +201,7 @@ search over it. For this, some preprocessing must be applied to the source files
 Once the index is formed the next step is building a query processor. In our case, the queries are bug reports posted 
 on a bug-tracking system, and they normally consist of title and description. The same process outlined above, excluding 
 the first three steps, is applied to both fields and an information retrieval system such as Lucene is used to rank the 
-documents in order of descending relevance.
+documents in order of descending relevance. Using a certain weighting scheme that will be explained in the next section.
 
 Relevance calculation is the step that will really determine the effectiveness of our implementation. Three different
 values will be used for this process: textual similarity, file length and similar bugs. The way these values are computed
@@ -282,7 +283,7 @@ considered, calculated using equation \ref{similarity}. For every document $f$ i
 \end{equation}
 
 Where $S$ is the similarity score defined in equation \ref{similarity}, $R(f)$ is the set of bug reports that include
-$f$ in their fix set and $n_i$ is the amount of files in the fix set of $P_i$. This information is used to improve the location of bugs that have been previously identified in specif files.
+$f$ in their fix set and $n_i$ is the amount of files in the fix set of $P_i$.
 
 \section{Experimental Design}
 After the IR approach is implemented, it will be empirically tested on some open source software projects. 
@@ -320,8 +321,11 @@ only the description and using both. The results will be evaluated using the fol
 \end{itemize}
 
 \section{Conclusion}
-With our implementation, we aim at developing a tool for bug localization at the file level that takes as input bug reports. This implementation follows a similar technique used in already known tools such as BugLocator. We will also test the effectiveness of our tool with 9 open source projects and 424 bugs reports already acquired and report future course of action. With these results, a comprehensive analysis of the strengths and weaknesses of 
-the approach will be carried out, which will allow us to propose candidates for future work.
+With our implementation, we aim at developing a tool for bug localization at the file level that takes bug reports
+as input. This implementation uses a similar technique used in already known tools such as BugLocator. We will
+also test the effectiveness of our tool on a gold set constructed from open source projects. With these results,
+a comprehensive analysis of the strengths and weaknesses of the approach will be carried out, which will allow
+us to propose candidates for future work.
 
 \bibliographystyle{abbrv}
 \bibliography{project}
