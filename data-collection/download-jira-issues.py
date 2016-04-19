@@ -42,7 +42,8 @@ def main():
                 {'jql': 'key IN (%s)' %
                  ','.join(issue_ids[start_index:end_index]),
                  'maxResults': API_BATCH_SIZE,
-                 'fields': 'id,key,summary,description,resolutiondate'}))
+                 'fields': 'id,key,summary,description,resolutiondate,created'
+                 }))
 
         response_json = json.loads(connection.getresponse().read().decode())
 
@@ -70,6 +71,7 @@ def main():
             print(json.dumps({'key': key,
                               'title': issue['summary'],
                               'description': issue['description'],
+                              'creation_date': issue['created'],
                               'resolution_date': issue['resolutiondate'],
                               'fixed_files': local_issues[key]}))
 
