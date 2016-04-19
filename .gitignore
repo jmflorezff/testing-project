@@ -4,3 +4,5 @@ tex/*.synctex.gz
 tex/*.aux
 tex/*.bbl
 tex/*.blg
+.idea/
+*.iml
