@@ -6,3 +6,4 @@ tex/*.bbl
 tex/*.blg
 .idea/
 *.iml
+__pycache__
