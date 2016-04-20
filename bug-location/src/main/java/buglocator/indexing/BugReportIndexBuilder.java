@@ -16,15 +16,16 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 /**
- * Created by juan on 4/19/16.
+ * Builds a Lucene index for a corpus of bug reports. Keeps no transient state, can be safely
+ * reused.
  */
 public class BugReportIndexBuilder {
-    public void buildIndex(String sourceFilePath) throws IOException {
+    public void buildIndex(String sourceFilePath, String indexDestinationPath) throws IOException {
         // Create an index writer
         IndexWriterConfig writerConfig = new IndexWriterConfig(new WhitespaceAnalyzer());
         writerConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
         IndexWriter indexWriter =
-                new IndexWriter(FSDirectory.open(Paths.get("some-path")), writerConfig);
+                new IndexWriter(FSDirectory.open(Paths.get(indexDestinationPath)), writerConfig);
 
         // Create a JSON deserializer
         GsonBuilder gsonBuilder = new GsonBuilder();
