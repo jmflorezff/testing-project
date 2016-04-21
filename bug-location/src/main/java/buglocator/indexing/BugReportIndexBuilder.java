@@ -1,18 +1,22 @@
 package buglocator.indexing;
 
 import buglocator.indexing.data.BugReport;
+import buglocator.indexing.utils.DateTimeJsonAdapter;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
+import org.joda.time.DateTime;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
@@ -20,17 +24,17 @@ import java.nio.file.Paths;
  * reused.
  */
 public class BugReportIndexBuilder {
-    public void buildIndex(String sourceFilePath, String indexDestinationPath) throws IOException {
+    public void buildIndex(String sourceFilePath, Path indexPath) throws IOException {
         // Create an index writer
         IndexWriterConfig writerConfig = new IndexWriterConfig(new WhitespaceAnalyzer());
         writerConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
         IndexWriter indexWriter =
-                new IndexWriter(FSDirectory.open(Paths.get(indexDestinationPath)), writerConfig);
+                new IndexWriter(FSDirectory.open(indexPath), writerConfig);
 
         // Create a JSON deserializer
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
-//        gsonBuilder.registerTypeAdapter()
+        gsonBuilder.registerTypeAdapter(DateTime.class, new DateTimeJsonAdapter());
         Gson gson = gsonBuilder.create();
 
         // Iterate through the JSON lines file and extract all the documents
@@ -47,6 +51,7 @@ public class BugReportIndexBuilder {
 
     private Document createDocument(BugReport bugReport) {
         Document document = new Document();
+
         document.add(new StringField("key", bugReport.getKey(), Field.Store.YES));
         document.add(new TextField("title", bugReport.getTitle(), Field.Store.YES));
         document.add(new TextField("description", bugReport.getDescription(), Field.Store.YES));
