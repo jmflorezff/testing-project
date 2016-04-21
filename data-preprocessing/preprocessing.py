@@ -22,9 +22,22 @@ class Preprocessor(object):
             r"[\w$]+(?:(?:-|')[\w$]+)*")
         self.stemmer = nltk.stem.PorterStemmer()
 
+    def is_numeric(self, token):
+        """Returns True if at least one character in the token is a letter.
+        Intentionally admits punctuation.
+        """
+        for c in token:
+            if c.isalpha():
+                return False
+
+        return True
+
     def is_valid_token(self, token):
-        return (len(token) >= self.min_length and not token.isnumeric() and
-                token.lower() not in self.ignore)
+        """A token is valid if it is longer than the minimum length, is not
+        numeric and is not in the ignore list.
+        """
+        return (len(token) >= self.min_length and not self.is_numeric(token)
+                and token.lower() not in self.ignore)
     
     def preprocess(self, *strings):
         """Takes an iterable of strings of arbitrary length and contents
@@ -53,8 +66,9 @@ class Preprocessor(object):
                     new_tokens.extend(s for s in splits
                                       if self.is_valid_token(s))
                 
-                # Stem all new tokens
-                stemmed = [self.stemmer.stem(t).strip("'")
+                # Stem all new tokens and get rid of delimiters in the edges
+                # of words
+                stemmed = [self.stemmer.stem(t).strip("'-_$")
                            for t in new_tokens]
 
                 # Add the stemmed tokens if they are valid after stemming
