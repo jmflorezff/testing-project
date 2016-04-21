@@ -30,9 +30,10 @@ public class BuildBugReportIndexMain {
                     throws IOException {
                 String fileName = file.getFileName().toString();
                 String system = fileName.substring(0, fileName.indexOf(".json"));
-                Path indexPath = Paths.get("..", "index", system);
+                Path indexPath = Paths.get("..", "index", "bug-reports", system);
                 FileUtils.forceMkdir(indexPath.toFile());
                 indexBuilder.buildIndex(file, indexPath);
+
                 return FileVisitResult.CONTINUE;
             }
 
