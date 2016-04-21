@@ -1,5 +1,6 @@
-package buglocator.indexing;
+package buglocator.indexing.bug.reports;
 
+import buglocator.indexing.BaseIndexBuilder;
 import buglocator.indexing.data.BugReport;
 import buglocator.indexing.utils.DateTimeJsonAdapter;
 import com.google.gson.FieldNamingPolicy;
@@ -23,33 +24,13 @@ import java.nio.file.Paths;
  * Builds a Lucene index for a corpus of bug reports. Keeps no transient state, can be safely
  * reused.
  */
-public class BugReportIndexBuilder {
-    public void buildIndex(String sourceFilePath, Path indexPath) throws IOException {
-        // Create an index writer
-        IndexWriterConfig writerConfig = new IndexWriterConfig(new WhitespaceAnalyzer());
-        writerConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
-        IndexWriter indexWriter =
-                new IndexWriter(FSDirectory.open(indexPath), writerConfig);
-
-        // Create a JSON deserializer
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
-        gsonBuilder.registerTypeAdapter(DateTime.class, new DateTimeJsonAdapter());
-        Gson gson = gsonBuilder.create();
-
-        // Iterate through the JSON lines file and extract all the documents
-        try (BufferedReader br = new BufferedReader(new FileReader(sourceFilePath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                BugReport bugReport = gson.fromJson(line, BugReport.class);
-                indexWriter.addDocument(createDocument(bugReport));
-            }
-        }
-
-        indexWriter.close();
+public class BugReportIndexBuilder extends BaseIndexBuilder<BugReport> {
+    public BugReportIndexBuilder(){
+        super(BugReport.class);
     }
 
-    private Document createDocument(BugReport bugReport) {
+    @Override
+    protected Document createDocument(BugReport bugReport) {
         Document document = new Document();
 
         document.add(new StringField("key", bugReport.getKey(), Field.Store.YES));

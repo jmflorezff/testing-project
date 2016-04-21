@@ -1,4 +1,4 @@
-package buglocator.indexing;
+package buglocator.indexing.bug.reports;
 
 import org.apache.commons.io.FileUtils;
 
@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by juan on 4/20/16.
+ * Builds an index of bug reports
  */
 public class BuildBugReportIndexMain {
     private static final List<String> systems = Arrays.asList("bookkeeper", "derby", "lucene",
@@ -32,7 +32,7 @@ public class BuildBugReportIndexMain {
                 String system = fileName.substring(0, fileName.indexOf(".json"));
                 Path indexPath = Paths.get("..", "index", system);
                 FileUtils.forceMkdir(indexPath.toFile());
-                indexBuilder.buildIndex(file.toString(), indexPath);
+                indexBuilder.buildIndex(file, indexPath);
                 return FileVisitResult.CONTINUE;
             }
 
