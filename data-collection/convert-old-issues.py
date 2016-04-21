@@ -34,7 +34,7 @@ def main():
         if not line:
             break
         
-        _, key = line.split()
+        key = line.split()[1]
         system = key.split('-')[0]
 
         # Skip lines until a line with a single number in it is found
