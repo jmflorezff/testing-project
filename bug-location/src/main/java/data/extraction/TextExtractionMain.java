@@ -79,7 +79,7 @@ public class TextExtractionMain {
                         String sourceText = String.join(" ", extractor.getExtractedTexts());
 
                         Map<String, String> json = new HashMap<>();
-                        json.put("file", file.toString().replace(pathString, ""));
+                        json.put("file_path", file.toString().replace(pathString, ""));
                         json.put("text", sourceText);
 
                         FileUtils.write(outputFile, gson.toJson(json) + "\n", true);
