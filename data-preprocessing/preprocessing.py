@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Utilities for tokenization of source code and bug reports.
+Utilities for preprocessing of source code and bug reports.
 """
 
 
