@@ -32,7 +32,7 @@ public class BugLocatorSimilarity extends BaseSimilarity {
 
     @Override
     public float calculate(Map<String, Integer> queryFrequencies, int docId) throws IOException {
-        Terms termVector = reader.getTermVector(docId, "field");
+        Terms termVector = reader.getTermVector(docId, "text");
 
         // Stats needed to calculate the score
         int docLen = (int) termVector.size();
@@ -66,7 +66,7 @@ public class BugLocatorSimilarity extends BaseSimilarity {
             // If document frequency for the current term is not in the dictionary, read it from
             // the index
             if (!documentFrequencies.containsKey(termString)) {
-                documentFrequencies.put(termString, reader.docFreq(new Term("field", termString)));
+                documentFrequencies.put(termString, reader.docFreq(new Term("text", termString)));
             }
             secondPart += pow((Math.log(termsEnum.totalTermFreq()) + 1) *
                     Math.log(numDocs / documentFrequencies.get(termString)), 2);
