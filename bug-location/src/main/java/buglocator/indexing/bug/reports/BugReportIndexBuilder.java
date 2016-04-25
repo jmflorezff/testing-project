@@ -25,7 +25,7 @@ import java.nio.file.Paths;
  * reused.
  */
 public class BugReportIndexBuilder extends BaseIndexBuilder<BugReport> {
-    public BugReportIndexBuilder(){
+    public BugReportIndexBuilder() {
         super(BugReport.class);
     }
 
@@ -34,8 +34,8 @@ public class BugReportIndexBuilder extends BaseIndexBuilder<BugReport> {
         Document document = new Document();
 
         document.add(new StringField("key", bugReport.getKey(), Field.Store.YES));
-        document.add(new TextField("title", bugReport.getTitle(), Field.Store.YES));
-        document.add(new TextField("description", bugReport.getDescription(), Field.Store.YES));
+        document.add(new Field("fullText",
+                bugReport.getTitle() + " " + bugReport.getDescription(), termVectorsFieldType));
         document.add(new LongField("creationDate",
                 bugReport.getCreationDate().getMillis(), Field.Store.NO));
         document.add(new LongField("resolutionDate",

@@ -6,6 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
@@ -21,15 +23,22 @@ import java.nio.file.Path;
  */
 public abstract class BaseIndexBuilder<T> {
     private final Class<T> jsonElementClass;
+    protected static final FieldType termVectorsFieldType;
+
+    static {
+        termVectorsFieldType = new FieldType();
+        termVectorsFieldType.setIndexOptions(IndexOptions.DOCS_AND_FREQS);
+        termVectorsFieldType.setStoreTermVectors(true);
+        termVectorsFieldType.setTokenized(true);
+    }
 
     public BaseIndexBuilder(Class<T> jsonElementClass) {
-        this.jsonElementClass=jsonElementClass;
+        this.jsonElementClass = jsonElementClass;
     }
 
     public void buildIndex(Path sourceFilePath, Path indexPath) throws IOException {
         // Create an index writer
-        IndexWriterConfig writerConfig = new IndexWriterConfig(new WhitespaceAnalyzer());
-        writerConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+        IndexWriterConfig writerConfig = createIndexBuilderConfig();
         IndexWriter indexWriter =
                 new IndexWriter(FSDirectory.open(indexPath), writerConfig);
 
@@ -49,6 +58,12 @@ public abstract class BaseIndexBuilder<T> {
         }
 
         indexWriter.close();
+    }
+
+    protected IndexWriterConfig createIndexBuilderConfig() {
+        IndexWriterConfig writerConfig = new IndexWriterConfig(new WhitespaceAnalyzer());
+        writerConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+        return writerConfig;
     }
 
     protected abstract Document createDocument(T item);
