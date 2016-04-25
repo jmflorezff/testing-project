@@ -7,3 +7,6 @@ tex/*.blg
 .idea/
 *.iml
 __pycache__
+.classpath
+.project
+bin/
