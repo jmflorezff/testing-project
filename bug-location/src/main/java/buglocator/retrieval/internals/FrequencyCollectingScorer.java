@@ -1,29 +1,27 @@
 package buglocator.retrieval.internals;
 
+import buglocator.retrieval.data.TermFrequencyDictionary;
 import org.apache.lucene.index.PostingsEnum;
 import org.apache.lucene.search.Scorer;
 import org.apache.lucene.search.Weight;
 import org.apache.lucene.search.similarities.Similarity;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A scorer to use with {@link FrequencyCollectingQuery}.
  */
 public class FrequencyCollectingScorer extends Scorer {
     private final PostingsEnum postingsEnum;
-    private final Similarity.SimScorer docScorer;
-    private final Map<String, Map<Integer, Integer>> tfCounts;
+    private final TermFrequencyDictionary tfCounts;
     private final String termString;
 
-    public FrequencyCollectingScorer(String termString, Weight weight, PostingsEnum td, Similarity.SimScorer docScorer,
-             Map<String, Map<Integer, Integer>> tfCounts) {
+    public FrequencyCollectingScorer(String termString, Weight weight, PostingsEnum td,
+                                     Similarity.SimScorer docScorer,
+                                     TermFrequencyDictionary tfCounts) {
         super(weight);
         this.termString = termString;
         this.tfCounts = tfCounts;
-        this.docScorer = docScorer;
         this.postingsEnum = td;
     }
 
@@ -47,10 +45,7 @@ public class FrequencyCollectingScorer extends Scorer {
         assert docID() != NO_MORE_DOCS;
         int docId = postingsEnum.docID();
         int freq = postingsEnum.freq();
-        if (!tfCounts.containsKey(termString)) {
-            tfCounts.put(termString, new HashMap<>());
-        }
-        tfCounts.get(termString).put(docId, freq);
+        tfCounts.putTermFrequency(docId, termString, freq);
         return 1;
     }
 

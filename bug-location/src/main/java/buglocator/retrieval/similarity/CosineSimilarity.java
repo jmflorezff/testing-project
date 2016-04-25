@@ -1,5 +1,6 @@
 package buglocator.retrieval.similarity;
 
+import buglocator.retrieval.data.TermFrequencyDictionary;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.TermsEnum;
 
@@ -10,7 +11,7 @@ import java.util.Map;
  * Calculates cosine similarity between a query and a document.
  */
 public class CosineSimilarity extends BaseSimilarity {
-    public CosineSimilarity(Map<String, Map<Integer, Integer>> termFrequencies, IndexReader reader) {
+    public CosineSimilarity(TermFrequencyDictionary termFrequencies, IndexReader reader) {
         super(termFrequencies, reader);
     }
 
@@ -33,7 +34,7 @@ public class CosineSimilarity extends BaseSimilarity {
         // Calculate the dot product of the query and the document and return the result divided
         // by the product of both norms
         return queryFrequencies.entrySet().stream().map(e -> {
-            Integer docFreq = termFrequencies.get(e.getKey()).getOrDefault(docId, 0);
+            Integer docFreq = termFrequencies.getFrequencyOrZero(docId, e.getKey());
             return e.getValue() * docFreq;
         }).reduce(intAdder).get() / (docNorm * queryNorm);
     }

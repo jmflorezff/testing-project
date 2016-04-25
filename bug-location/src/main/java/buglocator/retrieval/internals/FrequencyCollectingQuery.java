@@ -1,5 +1,6 @@
 package buglocator.retrieval.internals;
 
+import buglocator.retrieval.data.TermFrequencyDictionary;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.similarities.Similarity;
@@ -7,7 +8,6 @@ import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -16,13 +16,13 @@ import java.util.Set;
 public class FrequencyCollectingQuery extends Query {
     private final Term term;
     private final TermContext perReaderTermState;
-    private final Map<String, Map<Integer, Integer>> tfCounts;
+    private final TermFrequencyDictionary tfCounts;
     private final String termString;
 
     /**
      * Constructs a query for the term <code>t</code>.
      */
-    public FrequencyCollectingQuery(String field, String termString, Map<String, Map<Integer, Integer>> tfCounts) {
+    public FrequencyCollectingQuery(String field, String termString, TermFrequencyDictionary tfCounts) {
         this.tfCounts = tfCounts;
         this.term = new Term(field, termString);
         this.termString = termString;
@@ -34,11 +34,11 @@ public class FrequencyCollectingQuery extends Query {
         private final Similarity.SimWeight stats;
         private final TermContext termStates;
         private final boolean needsScores;
-        private final Map<String, Map<Integer, Integer>> tfCounts;
+        private final TermFrequencyDictionary tfCounts;
         private final String termString;
 
         public MyWeight(String termString, IndexSearcher searcher, boolean needsScores, TermContext termStates,
-                        Map<String, Map<Integer, Integer>> tfCounts)
+                        TermFrequencyDictionary tfCounts)
                 throws IOException {
             super(FrequencyCollectingQuery.this);
             this.termString = termString;
@@ -149,10 +149,6 @@ public class FrequencyCollectingQuery extends Query {
      */
     public Term getTerm() {
         return term;
-    }
-
-    public Map<String, Map<Integer, Integer>> getTfCounts() {
-        return tfCounts;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package buglocator.retrieval.similarity;
 
+import buglocator.retrieval.data.TermFrequencyDictionary;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.Terms;
@@ -21,7 +22,7 @@ public class BugLocatorSimilarity extends BaseSimilarity {
     private final int minDocumentLength;
     private final int maxDocumentLength;
 
-    public BugLocatorSimilarity(Map<String, Map<Integer, Integer>> termFrequencies, IndexReader reader,
+    public BugLocatorSimilarity(TermFrequencyDictionary termFrequencies, IndexReader reader,
                                 Map<String, Integer> documentFrequencies, int minDocumentLength,
                                 int maxDocumentLength) {
         super(termFrequencies, reader);
@@ -76,7 +77,7 @@ public class BugLocatorSimilarity extends BaseSimilarity {
         // Combination of tf-idf for common terms
         float thirdPart = queryFrequencies.entrySet().stream().map(e -> {
             // e: queryTerm -> queryFreq
-            Integer docFreq = termFrequencies.get(e.getKey()).getOrDefault(docId, 0);
+            Integer docFreq = termFrequencies.getFrequencyOrZero(docId, e.getKey());
             if (docFreq == 0) {
                 return 0F;
             } else {

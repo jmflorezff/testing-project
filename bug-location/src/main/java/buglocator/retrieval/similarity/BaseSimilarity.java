@@ -1,5 +1,6 @@
 package buglocator.retrieval.similarity;
 
+import buglocator.retrieval.data.TermFrequencyDictionary;
 import org.apache.lucene.index.IndexReader;
 
 import java.io.IOException;
@@ -13,10 +14,10 @@ public abstract class BaseSimilarity {
     protected static final BinaryOperator<Float> floatAdder = (x, y) -> x + y;
     protected static final BinaryOperator<Integer> intAdder = (i, j) -> i + j;
 
-    protected Map<String, Map<Integer, Integer>> termFrequencies;
+    protected TermFrequencyDictionary termFrequencies;
     protected IndexReader reader;
 
-    public BaseSimilarity(Map<String, Map<Integer, Integer>> termFrequencies, IndexReader reader) {
+    public BaseSimilarity(TermFrequencyDictionary termFrequencies, IndexReader reader) {
         this.termFrequencies = termFrequencies;
         this.reader = reader;
     }
