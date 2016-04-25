@@ -1,4 +1,4 @@
-package buglocator.indexing.code;
+package buglocator.indexing.source.code;
 
 import org.apache.commons.io.FileUtils;
 

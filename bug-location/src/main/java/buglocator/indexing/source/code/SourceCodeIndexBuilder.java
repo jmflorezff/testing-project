@@ -1,4 +1,4 @@
-package buglocator.indexing.code;
+package buglocator.indexing.source.code;
 
 import buglocator.indexing.BaseIndexBuilder;
 import buglocator.indexing.data.SourceFileText;

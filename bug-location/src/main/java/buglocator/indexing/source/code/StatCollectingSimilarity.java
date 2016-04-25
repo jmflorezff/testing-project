@@ -1,4 +1,4 @@
-package buglocator.indexing.code;
+package buglocator.indexing.source.code;
 
 import org.apache.lucene.index.FieldInvertState;
 import org.apache.lucene.index.LeafReaderContext;
