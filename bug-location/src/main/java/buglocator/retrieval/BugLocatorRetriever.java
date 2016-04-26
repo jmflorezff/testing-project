@@ -44,14 +44,12 @@ public class BugLocatorRetriever {
     public BugLocatorRetriever(UseField useField,
                                IndexSearcher sourceTextSearcher,
                                IndexSearcher bugReportSearcher,
-                               Map<String, Integer> sourceFileIDS,
                                float alpha,
                                int minSourceFileLength,
                                int maxSourceFileLength) {
         this.useField = useField;
         this.sourceTextSearcher = sourceTextSearcher;
         this.bugReportSearcher = bugReportSearcher;
-        this.sourceFileIDS = sourceFileIDS;
         this.alpha = alpha;
 
         sourceTextIndexReader = sourceTextSearcher.getIndexReader();
@@ -59,6 +57,7 @@ public class BugLocatorRetriever {
 
         sourceFileTFCounts = new TermFrequencyDictionary();
         bugReportTFCounts = new TermFrequencyDictionary();
+        sourceFileIDS = new HashMap<>();
 
         bugLocatorSimilarity = new BugLocatorSimilarity(bugReportTFCounts, bugReportIndexReader,
                 minSourceFileLength, maxSourceFileLength);
@@ -174,7 +173,7 @@ public class BugLocatorRetriever {
         maxSimiScore = simiScore > maxSimiScore ? simiScore : maxSimiScore;
     }
 
-    private int getSourceFileID(String filePath) throws IOException {
+    public int getSourceFileID(String filePath) throws IOException {
         if (!sourceFileIDS.containsKey(filePath)) {
             ScoreDoc file = sourceTextSearcher.search(
                     new TermQuery(new Term("file", filePath)), 1).scoreDocs[0];
