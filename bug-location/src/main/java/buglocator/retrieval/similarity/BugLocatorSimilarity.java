@@ -21,13 +21,15 @@ import static java.lang.StrictMath.pow;
 public class BugLocatorSimilarity extends BaseSimilarity {
     private final Map<String, Integer> documentFrequencies = new HashMap<>();
     private final int minDocumentLength;
-    private final int maxDocumentLength;
+    private final float numDocs;
+    private final float doclenRange;
 
     public BugLocatorSimilarity(TermFrequencyDictionary termFrequencies, IndexReader reader,
                                 int minDocumentLength, int maxDocumentLength) {
         super(termFrequencies, reader);
         this.minDocumentLength = minDocumentLength;
-        this.maxDocumentLength = maxDocumentLength;
+        numDocs = reader.numDocs();
+        doclenRange = maxDocumentLength - minDocumentLength;
     }
 
     @Override
@@ -36,12 +38,11 @@ public class BugLocatorSimilarity extends BaseSimilarity {
 
         // Stats needed to calculate the score
         int docLen = (int) termVector.size();
-        float numDocs = reader.numDocs();
 
         // Normalization factor according to a logistic function, it gives more weight to longer
         // documents
         float docLenNorm = (float) (1 / (1 +
-                exp(-(docLen - minDocumentLength) / (minDocumentLength - maxDocumentLength))));
+                exp(-(docLen - minDocumentLength) / doclenRange)));
 
         // First part: Multiplicative inverse of the square root of the sum of squared tf-idf
         // values for every term in the query

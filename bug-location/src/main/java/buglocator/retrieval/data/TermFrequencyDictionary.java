@@ -3,7 +3,7 @@ package buglocator.retrieval.data;
 import java.util.HashMap;
 
 /**
- * Mimics an inverted index in memory.
+ * Caches part of an inverted index in memory.
  */
 public class TermFrequencyDictionary extends HashMap<String, HashMap<Integer, Integer>> {
     public void putTermFrequency(int docId, String termString, int termFreq) {
@@ -14,6 +14,6 @@ public class TermFrequencyDictionary extends HashMap<String, HashMap<Integer, In
     }
 
     public int getFrequencyOrZero(int docId, String term) {
-        return get(term).getOrDefault(docId, 0);
+        return containsKey(term) ? get(term).getOrDefault(docId, 0) : 0;
     }
 }

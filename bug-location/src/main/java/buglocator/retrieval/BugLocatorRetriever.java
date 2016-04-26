@@ -59,12 +59,12 @@ public class BugLocatorRetriever {
         bugReportTFCounts = new TermFrequencyDictionary();
         sourceFileIDS = new HashMap<>();
 
-        bugLocatorSimilarity = new BugLocatorSimilarity(bugReportTFCounts, bugReportIndexReader,
+        bugLocatorSimilarity = new BugLocatorSimilarity(sourceFileTFCounts, sourceTextIndexReader,
                 minSourceFileLength, maxSourceFileLength);
         cosineSimilarity = new CosineSimilarity(bugReportTFCounts, bugReportIndexReader);
     }
 
-    public Map.Entry<Integer, Float>[] locate(BugReport bugReport) throws IOException {
+    public ScoreDoc[] locate(BugReport bugReport) throws IOException {
         String queryString;
 
         switch (useField) {
@@ -118,8 +118,17 @@ public class BugLocatorRetriever {
                     currScore + alpha * ((simiScore - minSimiScore) / simiScoreNormalizeVal));
         });
 
-        return (Map.Entry<Integer, Float>[]) totalScores.entrySet().stream().sorted(
+        ScoreDoc[] results = new ScoreDoc[totalScores.size()];
+
+        Object[] sortedEntries = totalScores.entrySet().stream().sorted(
                 (o1, o2) -> (int) Math.signum(o2.getValue() - o1.getValue())).toArray();
+
+        for (int i = 0; i < sortedEntries.length; i++) {
+            Map.Entry<Integer, Float> e = (Map.Entry<Integer, Float>) sortedEntries[i];
+            results[i] = new ScoreDoc(e.getKey(), e.getValue());
+        }
+
+        return results;
     }
 
     private Map<Integer, Float> scoreBugReports(
@@ -176,7 +185,7 @@ public class BugLocatorRetriever {
     public int getSourceFileID(String filePath) throws IOException {
         if (!sourceFileIDS.containsKey(filePath)) {
             ScoreDoc file = sourceTextSearcher.search(
-                    new TermQuery(new Term("file", filePath)), 1).scoreDocs[0];
+                    new TermQuery(new Term("path", filePath)), 1).scoreDocs[0];
             sourceFileIDS.put(filePath, file.doc);
         }
 
@@ -190,13 +199,12 @@ public class BugLocatorRetriever {
 
         // Add clause for fixed date, we are only interested in the bug reports that were fixed
         // before this bug was reported.
-        // Made final date exclusive to avoid retrieving the same bug report we're using as query
         relatedBugsQuery.add(new BooleanClause(
-                NumericRangeQuery.newLongRange("resolutionDate", 0L,
+                NumericRangeQuery.newLongRange("resolutionDate", 1L,
                         bugReport.getCreationDate().getMillis(), true, false),
-                BooleanClause.Occur.MUST));
+                BooleanClause.Occur.SHOULD));
 
-        // Also make sure it's not retrieved by explicitly forbidding its key
+        // Make sure the bug report used as query is not retrieved by explicitly forbidding its key
         relatedBugsQuery.add(new BooleanClause(new TermQuery(new Term("key", bugReport.getKey())),
                 BooleanClause.Occur.MUST_NOT));
 
