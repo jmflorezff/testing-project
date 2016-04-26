@@ -23,12 +23,16 @@ class Preprocessor(object):
         self.stemmer = nltk.stem.PorterStemmer()
 
     def is_numeric(self, token):
-        """Returns True if at least one character in the token is a letter.
-        Intentionally admits punctuation.
+        """Returns True if at least min_length characters in the strings are
+        letters. Intentionally admits punctuation.
         """
+        letters = 0
+        
         for c in token:
             if c.isalpha():
-                return False
+                letters += 1
+                if letters >= self.min_length:
+                    return False
 
         return True
 
