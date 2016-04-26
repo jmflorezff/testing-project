@@ -20,6 +20,7 @@ public class TextExtractionMain {
     private static final Map<String, String> systemRoot = new HashMap<>();
 
     static {
+        // Systems collected by us
         systemRoot.put("bookkeeper", "/home/juan/Source/bookkeeper-4.1.0/");
         systemRoot.put("derby", "/home/juan/Source/db-derby-10.9.1.0-src/");
         systemRoot.put("lucene", "/home/juan/Source/lucene-solr-releases-lucene-solr-4.4.0/lucene/");
@@ -29,14 +30,19 @@ public class TextExtractionMain {
         systemRoot.put("solr", "/home/juan/Source/lucene-solr-releases-lucene-solr-4.4.0/solr/");
         systemRoot.put("tika", "/home/juan/Source/tika-1.3/");
         systemRoot.put("zookeeper", "/home/juan/Source/zookeeper-release-3.4.5/");
+
+        // Systems used by the authors
+        systemRoot.put("eclipse", "/home/juan/Source/eclipse-3.1/");
+        systemRoot.put("swt", "/home/juan/Source/SWT-3.1/");
+        systemRoot.put("aspectj", "/home/juan/Source/aspectj-1.5.3/");
     }
 
     public static void main(String[] args) {
         systemRoot.forEach((systemName, pathString) -> {
             Path startPath = Paths.get(pathString);
             File outputFile =
-                    new File(".." + File.separator + "data" +
-                            File.separator + systemName + "-raw.json");
+                    new File(".." + File.separator + "data" + File.separator + "raw-source" +
+                            File.separator + systemName + ".json");
             Gson gson = new Gson();
             try {
                 Files.walkFileTree(startPath, new FileVisitor<Path>() {
@@ -45,6 +51,7 @@ public class TextExtractionMain {
                             Path dir, BasicFileAttributes attrs) throws IOException {
                         // Ignore test directories
                         if (dir.endsWith("src/test")) {
+                            System.out.println("Ignoring test directory: " + dir.toString());
                             return FileVisitResult.SKIP_SUBTREE;
                         } else {
                             return FileVisitResult.CONTINUE;
