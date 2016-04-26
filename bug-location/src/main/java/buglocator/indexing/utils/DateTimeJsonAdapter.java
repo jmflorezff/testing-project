@@ -18,7 +18,8 @@ public class DateTimeJsonAdapter extends TypeAdapter<DateTime> {
 
     @Override
     public DateTime read(JsonReader jsonReader) throws IOException {
-        String dateString = jsonReader.nextString();
+        // The dates from the author's dataset are poorly formatted, fix that adding this 'T'
+        String dateString = jsonReader.nextString().replace(' ', 'T');
         return new DateTime(dateString);
     }
 }

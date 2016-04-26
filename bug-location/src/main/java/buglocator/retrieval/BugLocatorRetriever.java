@@ -189,11 +189,16 @@ public class BugLocatorRetriever {
         BooleanQuery relatedBugsQuery = new BooleanQuery();
 
         // Add clause for fixed date, we are only interested in the bug reports that were fixed
-        // before this bug was reported
+        // before this bug was reported.
+        // Made final date exclusive to avoid retrieving the same bug report we're using as query
         relatedBugsQuery.add(new BooleanClause(
                 NumericRangeQuery.newLongRange("resolutionDate", 0L,
-                        bugReport.getCreationDate().getMillis(), true, true),
+                        bugReport.getCreationDate().getMillis(), true, false),
                 BooleanClause.Occur.MUST));
+
+        // Also make sure it's not retrieved by explicitly forbidding its key
+        relatedBugsQuery.add(new BooleanClause(new TermQuery(new Term("key", bugReport.getKey())),
+                BooleanClause.Occur.MUST_NOT));
 
         queryFreqs.forEach((term, __) -> {
             FrequencyCollectingQuery newClause =

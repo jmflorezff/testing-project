@@ -53,7 +53,12 @@ public abstract class BaseIndexBuilder<T> {
             String line;
             while ((line = br.readLine()) != null) {
                 T item = gson.fromJson(line, jsonElementClass);
-                indexWriter.addDocument(createDocument(item));
+                // TODO: use index numbers instead of names for fixed files indexing
+                try {
+                    indexWriter.addDocument(createDocument(item));
+                } catch (IllegalArgumentException e) {
+                    System.out.println("This makes me die:\n" + line);
+                }
             }
         }
 
