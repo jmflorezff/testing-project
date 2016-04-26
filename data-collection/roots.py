@@ -4,9 +4,10 @@
 Source roots for software systems to index.
 """
 
+_source = '/home/juan/Source/'
 
 SRC_ROOTS = {
-    'BOOKKEEPER': '/home/juan/Source/bookkeeper-4.1.0',
+    'BOOKKEEPER': _source + 'bookkeeper-4.1.0',
     'DERBY': '/home/juan/Source/db-derby-10.9.1.0-src',
     'LUCENE': '/home/juan/Source/lucene-solr-releases-lucene-solr-4.4.0/lucene',
     'MAHOUT': '/home/juan/Source/mahout-distribution-0.8',
@@ -14,5 +15,9 @@ SRC_ROOTS = {
     'PIG': '/home/juan/Source/pig-release-0.11.1',
     'SOLR': '/home/juan/Source/lucene-solr-releases-lucene-solr-4.4.0/solr',
     'TIKA': '/home/juan/Source/tika-1.3',
-    'ZOOKEEPER': '/home/juan/Source/zookeeper-release-3.4.5',
+    'ZOOKEEPER': _source + 'zookeeper-release-3.4.5',
+    
+    'Eclipse': _source + 'eclipse-3.1',
+    'SWT': _source + 'SWT-3.1',
+    'AspectJ': _source + 'aspectj-1.5.3',
 }

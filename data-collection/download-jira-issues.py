@@ -26,24 +26,34 @@ def main():
     try:
         for line in sys.stdin:
             obj = json.loads(line)
-            local_issues[obj['key']] = obj['fixed_files']
+            valid_files = []
+            system = obj['key'].split('-')[0]
+            
             for file_path in obj['fixed_files']:
                 if not file_path.endswith('.java'):
-                    print('ERROR: Not a java file: %s' % file_path,
+                    print('WARNING: Not a java file: %s' % file_path,
                           file=sys.stderr)
-                    exit(1)
+                    continue
 
                 if test_file_re.search(file_path):
-                    print('ERROR: %s is a test file' % file_path,
+                    print('WARNING: %s is a test file' % file_path,
                           file=sys.stderr)
-                    exit(1)
+                    continue
                     
-                system = obj['key'].split('-')[0]
                 full_path = os.path.join(SRC_ROOTS[system], file_path)
                 if not os.path.exists(full_path):
-                    print('ERROR: File %s does not exist in local source code '
-                          'path' % file_path, file=sys.stderr)
-                    exit(1)
+                    print('WARNING: File %s does not exist in local '
+                          'source code path' % file_path, file=sys.stderr)
+                    continue
+                
+                valid_files.append(file_path)
+
+            if not valid_files:
+                print('\nWARNING: No valid files for issue %s' % obj['key'],
+                      file=sys.stderr)
+                continue
+                    
+            local_issues[obj['key']] = valid_files
                     
     except (ValueError, KeyError) as _:
         print('Input format: {"key": "<issue_key>", "fixed_files": '
