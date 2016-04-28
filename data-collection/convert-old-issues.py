@@ -15,7 +15,7 @@ import sys
 
 def main():
     # Consider test files are always under src/test/
-    test_file_re = re.compile('src' + os.sep + 'test' + os.sep)
+    test_file_re = re.compile(r'.*Test$')
     while True:
         line = sys.stdin.readline().strip()
         
@@ -37,23 +37,22 @@ def main():
         output_file_paths = set()
 
         for file_index in range(amount_of_files):
-            class_path = (sys.stdin.readline().strip().replace('.', os.sep) +
-                          '.java')
+            class_path = sys.stdin.readline().strip().replace('.', os.sep)
             
-            if test_file_re.search(class_path):
-                print('Ignoring test file: %s' % class_path,
-                      file=sys.stderr)
-                continue
+##            if test_file_re.search(class_path):
+##                print('Ignoring test file: %s' % class_path,
+##                      file=sys.stderr)
+##                continue
                       
             presumed_file_path = os.path.join(SRC_ROOTS[system], class_path)
             nesting_level = 0
 
             while nesting_level < 3:
-                if os.path.exists(presumed_file_path):
+                if os.path.exists(presumed_file_path + '.java'):
                     break
 
-                class_path = (class_path[:presumed_file_path.rindex(os.sep)] +
-                              '.java')
+##                print('pa',class_path,file=sys.stderr)
+                class_path = class_path[:class_path.rindex(os.sep)]
                 presumed_file_path = os.path.join(SRC_ROOTS[system], class_path)
                 nesting_level += 1
             else:
@@ -61,7 +60,7 @@ def main():
                       (class_path, key), file=sys.stderr)
                 continue
 
-            output_file_paths.add(class_path)
+            output_file_paths.add(class_path + '.java')
 
         if not output_file_paths:
             print("WARNING: No fixed files for issue %s" % key,

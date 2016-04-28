@@ -22,6 +22,7 @@ API_BATCH_SIZE = 100
 
 def main():
     test_file_re = re.compile('src' + os.sep + 'test' + os.sep)
+    java_file_re = re.compile(r'.*\.java\s*$')
     local_issues = {}
     try:
         for line in sys.stdin:
@@ -30,15 +31,16 @@ def main():
             system = obj['key'].split('-')[0]
             
             for file_path in obj['fixed_files']:
-                if not file_path.endswith('.java'):
+                file_path = file_path.strip()
+                if not java_file_re.match(file_path):
                     print('WARNING: Not a java file: %s' % file_path,
                           file=sys.stderr)
                     continue
 
-                if test_file_re.search(file_path):
-                    print('WARNING: %s is a test file' % file_path,
-                          file=sys.stderr)
-                    continue
+##                if test_file_re.search(file_path):
+##                    print('WARNING: %s is a test file' % file_path,
+##                          file=sys.stderr)
+##                    continue
                     
                 full_path = os.path.join(SRC_ROOTS[system], file_path)
                 if not os.path.exists(full_path):

@@ -9,11 +9,11 @@ _source = '/home/juan/Source/'
 SRC_ROOTS = {
     'BOOKKEEPER': _source + 'bookkeeper-4.1.0',
     'DERBY': '/home/juan/Source/db-derby-10.9.1.0-src',
-    'LUCENE': '/home/juan/Source/lucene-solr-releases-lucene-solr-4.4.0/lucene',
+    'LUCENE': '/home/juan/Source/lucene-4.0.0',
     'MAHOUT': '/home/juan/Source/mahout-distribution-0.8',
     'OPENJPA': '/home/juan/Source/openjpa-2.2.0',
     'PIG': '/home/juan/Source/pig-release-0.11.1',
-    'SOLR': '/home/juan/Source/lucene-solr-releases-lucene-solr-4.4.0/solr',
+    'SOLR': '/home/juan/Source/lucene-solr-releases-lucene-solr-4.4.0',
     'TIKA': '/home/juan/Source/tika-1.3',
     'ZOOKEEPER': _source + 'zookeeper-release-3.4.5',
     
