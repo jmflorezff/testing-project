@@ -25,9 +25,9 @@ import java.util.stream.Collectors;
  * Retrieval evaluator for the BugLocator approach.
  */
 public class BugLocatorEvaluator {
-    //    private static final List<String> systems = Arrays.asList("bookkeeper", "derby", "lucene",
-//            "mahout", "openjpa", "pig", "solr", "tika", "zookeeper");
-    private static final String[] systems = {"swt", "aspectj"};//, "eclipse"};
+    private static final String[] systems = {"aspectj-1.5.3", "bookkeeper-4.1.0", "derby-10.9.1.0",
+            "eclipse-3.1", "lucene-4.0", "mahout-0.8", "openjpa-2.2.0", "pig-0.11.1", "solr-4.4.0",
+            "swt-3.1", "tika-1.3", "zookeeper-3.4.5.json"};
 
     public EvaluationResult[] evaluate(BugLocatorRetriever.UseField useField,
                                        Path indexPath,

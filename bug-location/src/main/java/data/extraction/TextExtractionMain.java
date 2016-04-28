@@ -21,20 +21,20 @@ public class TextExtractionMain {
 
     static {
         // Systems collected by us
-        systemRoot.put("bookkeeper", "/home/juan/Source/bookkeeper-4.1.0/");
-        systemRoot.put("derby", "/home/juan/Source/db-derby-10.9.1.0-src/");
-        systemRoot.put("lucene", "/home/juan/Source/lucene-4.0.0/");
-        systemRoot.put("mahout", "/home/juan/Source/mahout-distribution-0.8/");
-        systemRoot.put("openjpa", "/home/juan/Source/openjpa-2.2.0/");
-        systemRoot.put("pig", "/home/juan/Source/pig-release-0.11.1/");
-        systemRoot.put("solr", "/home/juan/Source/lucene-solr-releases-lucene-solr-4.4.0/");
-        systemRoot.put("tika", "/home/juan/Source/tika-1.3/");
-        systemRoot.put("zookeeper", "/home/juan/Source/zookeeper-release-3.4.5/");
+        systemRoot.put("bookkeeper-4.1.0", "/home/juan/Source/bookkeeper-4.1.0/");
+        systemRoot.put("derby-10.9.1.0", "/home/juan/Source/db-derby-10.9.1.0-src/");
+        systemRoot.put("lucene-4.0", "/home/juan/Source/lucene-4.0.0/");
+        systemRoot.put("mahout-0.8", "/home/juan/Source/mahout-distribution-0.8/");
+        systemRoot.put("openjpa-2.2.0", "/home/juan/Source/openjpa-2.2.0/");
+        systemRoot.put("pig-0.11.1", "/home/juan/Source/pig-release-0.11.1/");
+        systemRoot.put("solr-4.4.0", "/home/juan/Source/lucene-solr-releases-lucene-solr-4.4.0/");
+        systemRoot.put("tika-1.3", "/home/juan/Source/tika-1.3/");
+        systemRoot.put("zookeeper-3.4.5", "/home/juan/Source/zookeeper-release-3.4.5/");
 
         // Systems used by the authors
-        systemRoot.put("eclipse", "/home/juan/Source/eclipse-3.1/");
-        systemRoot.put("swt", "/home/juan/Source/SWT-3.1/");
-        systemRoot.put("aspectj", "/home/juan/Source/aspectj-1.5.3/");
+        systemRoot.put("eclipse-3.1", "/home/juan/Source/eclipse-3.1/");
+        systemRoot.put("swt-3.1", "/home/juan/Source/SWT-3.1/");
+        systemRoot.put("aspectj-1.5.3", "/home/juan/Source/aspectj-1.5.3/");
     }
 
     public static void main(String[] args) {
