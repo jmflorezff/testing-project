@@ -69,12 +69,21 @@ public class BugLocatorRetriever {
 
         switch (useField) {
             case TITLE:
+                if (bugReport.getTitle() == null) {
+                    return null;
+                }
                 queryString = bugReport.getTitle();
                 break;
             case DESCRIPTION:
+                if (bugReport.getDescription() == null) {
+                    return null;
+                }
                 queryString = bugReport.getDescription();
                 break;
             case TITLE_AND_DESCRIPTION:
+                if (bugReport.getTitle() == null && bugReport.getDescription() == null) {
+                    return null;
+                }
                 queryString = bugReport.getTitle() + " " + bugReport.getDescription();
                 break;
             default:
@@ -114,14 +123,22 @@ public class BugLocatorRetriever {
             Integer docId = e.getKey();
             float simiScore = e.getValue();
             float currScore = totalScores.getOrDefault(docId, 0F);
-            totalScores.put(docId,
-                    currScore + alpha * ((simiScore - minSimiScore) / simiScoreNormalizeVal));
+
+            float finalScore;
+            if (simiScoreNormalizeVal != 0) {
+                finalScore =
+                        currScore + (alpha * ((simiScore - minSimiScore) / simiScoreNormalizeVal));
+            } else {
+                finalScore = currScore + (alpha * simiScore);
+            }
+
+            totalScores.put(docId, finalScore);
         });
 
         ScoreDoc[] results = new ScoreDoc[totalScores.size()];
 
         Object[] sortedEntries = totalScores.entrySet().stream().sorted(
-                (o1, o2) -> (int) Math.signum(o2.getValue() - o1.getValue())).toArray();
+                (o1, o2) -> Float.compare(o2.getValue(), o1.getValue())).toArray();
 
         for (int i = 0; i < sortedEntries.length; i++) {
             Map.Entry<Integer, Float> e = (Map.Entry<Integer, Float>) sortedEntries[i];
@@ -139,6 +156,10 @@ public class BugLocatorRetriever {
         Arrays.stream(scoreDocs).forEach(sd -> {
             try {
                 sd.score = cosineSimilarity.calculate(queryFreqs, sd.doc);
+                if (sd.score == 0) {
+                    // It's a false positive
+                    return;
+                }
                 Document bugReport = bugReportIndexReader.document(sd.doc);
                 Arrays.stream(bugReport.get("fixedFiles").split(";")).forEach(f -> {
                     try {
@@ -202,7 +223,7 @@ public class BugLocatorRetriever {
         relatedBugsQuery.add(new BooleanClause(
                 NumericRangeQuery.newLongRange("resolutionDate", 1L,
                         bugReport.getCreationDate().getMillis(), true, false),
-                BooleanClause.Occur.SHOULD));
+                BooleanClause.Occur.FILTER));
 
         // Make sure the bug report used as query is not retrieved by explicitly forbidding its key
         relatedBugsQuery.add(new BooleanClause(new TermQuery(new Term("key", bugReport.getKey())),
