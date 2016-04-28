@@ -23,11 +23,11 @@ public class TextExtractionMain {
         // Systems collected by us
         systemRoot.put("bookkeeper", "/home/juan/Source/bookkeeper-4.1.0/");
         systemRoot.put("derby", "/home/juan/Source/db-derby-10.9.1.0-src/");
-        systemRoot.put("lucene", "/home/juan/Source/lucene-solr-releases-lucene-solr-4.4.0/lucene/");
+        systemRoot.put("lucene", "/home/juan/Source/lucene-4.0.0/");
         systemRoot.put("mahout", "/home/juan/Source/mahout-distribution-0.8/");
         systemRoot.put("openjpa", "/home/juan/Source/openjpa-2.2.0/");
         systemRoot.put("pig", "/home/juan/Source/pig-release-0.11.1/");
-        systemRoot.put("solr", "/home/juan/Source/lucene-solr-releases-lucene-solr-4.4.0/solr/");
+        systemRoot.put("solr", "/home/juan/Source/lucene-solr-releases-lucene-solr-4.4.0/");
         systemRoot.put("tika", "/home/juan/Source/tika-1.3/");
         systemRoot.put("zookeeper", "/home/juan/Source/zookeeper-release-3.4.5/");
 
@@ -49,13 +49,15 @@ public class TextExtractionMain {
                     @Override
                     public FileVisitResult preVisitDirectory(
                             Path dir, BasicFileAttributes attrs) throws IOException {
-                        // Ignore test directories
-                        if (dir.endsWith("src/test")) {
-                            System.out.println("Ignoring test directory: " + dir.toString());
-                            return FileVisitResult.SKIP_SUBTREE;
-                        } else {
-                            return FileVisitResult.CONTINUE;
-                        }
+//                         Ignore test directories
+//                        if (dir.endsWith("src/test")) {
+//                            System.out.println("Ignoring test directory: " + dir.toString());
+//                            return FileVisitResult.SKIP_SUBTREE;
+//                        } else {
+//                            return FileVisitResult.CONTINUE;
+//                        }
+
+                        return FileVisitResult.CONTINUE;
                     }
 
                     @Override

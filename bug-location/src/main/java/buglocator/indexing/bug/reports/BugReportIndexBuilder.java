@@ -31,6 +31,10 @@ public class BugReportIndexBuilder extends BaseIndexBuilder<BugReport> {
 
     @Override
     protected Document createDocument(BugReport bugReport) {
+        if (bugReport.getResolutionDate() == null) {
+            return null;
+        }
+
         Document document = new Document();
 
         document.add(new StringField("key", bugReport.getKey(), Field.Store.YES));

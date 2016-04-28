@@ -65,6 +65,10 @@ public class BugLocatorRetriever {
     }
 
     public ScoreDoc[] locate(BugReport bugReport) throws IOException {
+        if (bugReport.getCreationDate() == null) {
+            return null;
+        }
+
         String queryString;
 
         switch (useField) {

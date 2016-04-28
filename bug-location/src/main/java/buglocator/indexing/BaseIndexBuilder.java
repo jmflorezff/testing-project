@@ -55,7 +55,11 @@ public abstract class BaseIndexBuilder<T> {
                 T item = gson.fromJson(line, jsonElementClass);
                 // TODO: use index numbers instead of names for fixed files indexing
                 try {
-                    indexWriter.addDocument(createDocument(item));
+                    Document newDocument = createDocument(item);
+
+                    if (newDocument != null) {
+                        indexWriter.addDocument(newDocument);
+                    }
                 } catch (IllegalArgumentException e) {
                     System.out.println("This makes me die:\n" + line);
                 }
@@ -71,5 +75,9 @@ public abstract class BaseIndexBuilder<T> {
         return writerConfig;
     }
 
+    /**
+     * @param item The item to be indexed
+     * @return A new lucene document representing the item or {@code null} if the item is invalid.
+     */
     protected abstract Document createDocument(T item);
 }
