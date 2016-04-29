@@ -320,6 +320,15 @@ only the description and using both. The results will be evaluated using the fol
 	documents in the corpus and $pos(k)$ is $1$ if the document at position $k$ is relevant and $0$ otherwise.
 \end{itemize}
 
+\section{Experimental Results}
+
+\section{Challenges}
+Several challenges arose during the development of the project. The Implementation of the specific scoring functions in order to obtain the ranked files with the possible bug location required a lot of investigation. There was a need to implement custom classes in Lucene in order to perform the search queries, assign weight to source code files and rank such files with a scorer class. 
+Other challenges include the manual extraction of bugs reports from issue tracking system. While this process could be automated to read the content of issue tracking websites, we found that there is not an standardized form of submitting and reporting bugs. While some programs had very well organized reports with the patches attached stating the specific location of the bug, other contained no fix for the bug or repeated bug reports with the solution stated on the comments.
+
+\section{Future Work}
+There is a need to improve several aspects of the project in order to improve its effectiveness. One aspect that is important to mention is increasing the granularity of the tool. We are currently implementing granularity at the source code level. By refining the granularity to a method level, our framework will be able to present programmers a smaller piece of code and hence ease the effort when trying to locate and fix a bug. Another aspect that could be improved is the automation of bug extraction from issue tracking systems. This could potencially enhance the process for fixing bugs by presenting users with possible locations at the method level as soon as users enter bug reports.   
+
 \section{Conclusion}
 With our implementation, we aim at developing a tool for bug localization at the file level that takes bug reports
 as input. This implementation uses a similar technique used in already known tools such as BugLocator. We will
