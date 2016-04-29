@@ -12,9 +12,6 @@ import java.util.List;
  * Builds an index of bug reports
  */
 public class BuildBugReportIndexMain {
-    private static final List<String> systems = Arrays.asList("bookkeeper", "derby", "lucene",
-            "mahout", "openjpa", "pig", "solr", "tika", "zookeeper");
-
     public static void main(String[] args) throws IOException {
         BugReportIndexBuilder indexBuilder = new BugReportIndexBuilder();
         Path jsonsPath = Paths.get("..", "data", "processed-bug-reports");

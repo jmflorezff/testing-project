@@ -13,6 +13,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.FSDirectory;
 import org.joda.time.DateTime;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,6 +44,7 @@ public class BugLocatorEvaluator {
 
         EvaluationResult[] results = new EvaluationResult[systems.length];
         int systemIndex = 0;
+        File res = new File("ress");
 
         for (String system : systems) {
             Path sourceIndexPath = Paths.get(indexPath.toString(), "source-code", system);
@@ -135,7 +137,7 @@ public class BugLocatorEvaluator {
                 float averagePrecision = precisionAccum / actualQueries;
                 float averageRecall = recallAccum / actualQueries;
 
-                results[systemIndex++] = new EvaluationResult(
+                EvaluationResult result = new EvaluationResult(
                         system,
                         alpha,
                         actualQueries,
@@ -146,6 +148,20 @@ public class BugLocatorEvaluator {
                         meanAveragePrecision,
                         averagePrecision,
                         averageRecall);
+
+                results[systemIndex++] = result;
+//                System.out.println(String.join(";", Arrays.<CharSequence>asList(
+//                        result.getSystem(),
+//                        String.valueOf(result.getAlpha()),
+//                        String.valueOf(result.getTop1Precision()),
+//                        String.valueOf(result.getTop5Precision()),
+//                        String.valueOf(result.getTop10Precision()),
+//                        String.valueOf(result.getMeanReciprocalRank()),
+//                        String.valueOf(result.getMeanAveragePrecision()),
+//                        String.valueOf(result.getMeanAveragePrecision()),
+//                        String.valueOf(result.getAverageRecall()),
+//                        String.valueOf(result.getActualQueries())
+//                )));
             } else {
                 results[systemIndex++] = new EvaluationResult(system);
                 System.out.println("No valid queries for system " + system);

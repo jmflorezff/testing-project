@@ -33,7 +33,7 @@ public class EvaluationMain {
                         String.valueOf(result.getTop10Precision()),
                         String.valueOf(result.getMeanReciprocalRank()),
                         String.valueOf(result.getMeanAveragePrecision()),
-                        String.valueOf(result.getMeanAveragePrecision()),
+                        String.valueOf(result.getAveragePrecision()),
                         String.valueOf(result.getAverageRecall()),
                         String.valueOf(result.getActualQueries())
                 )));
