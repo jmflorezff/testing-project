@@ -11,15 +11,31 @@ import re
 
 
 class Preprocessor(object):
-    def __init__(self, min_length=3, ignore=None):
+    def __init__(self, word_characters=None, split_characters=None,
+                 inter_chars=None, min_length=3, ignore=None):
+        if word_characters:
+            word_characters = re.escape(word_characters)
+        else:
+            word_characters = r'\w$'
+
+        if split_characters:
+            split_characters = re.escape(split_characters)
+        else:
+            split_characters = r'_$-'
+
+        if inter_chars:
+            inter_chars = re.escape(inter_chars)
+        else:
+            inter_chars = r"'-"
+            
         if ignore:
             self.ignore = set(e.lower() for e in ignore)
         else:
             self.ignore = []
         self.min_length = min_length
-        self.id_split_re = re.compile(r'[_$-]')
+        self.id_split_re = re.compile(r'[%s]' % split_characters)
         self.tokenizer = nltk.tokenize.RegexpTokenizer(
-            r"[\w$]+(?:(?:-|')[\w$]+)*")
+            r"[{0}]+(?:[{1}][{0}]+)*".format(word_characters, inter_chars))
         self.stemmer = nltk.stem.PorterStemmer()
 
     def is_numeric(self, token):
@@ -27,12 +43,18 @@ class Preprocessor(object):
         letters. Intentionally admits punctuation.
         """
         letters = 0
+        numbers = 0
         
         for c in token:
             if c.isalpha():
                 letters += 1
-                if letters >= self.min_length:
-                    return False
+            elif c.isdigit():
+                numbers += 1
+
+        if letters < self.min_length:
+            return True
+        elif letters > numbers:
+            return False
 
         return True
 
