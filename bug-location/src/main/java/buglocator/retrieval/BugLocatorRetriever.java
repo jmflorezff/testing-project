@@ -41,6 +41,11 @@ public class BugLocatorRetriever {
         TITLE_AND_DESCRIPTION
     }
 
+    static {
+        // Set maximum clause count just in case
+        BooleanQuery.setMaxClauseCount(10000);
+    }
+
     public BugLocatorRetriever(UseField useField,
                                IndexSearcher sourceTextSearcher,
                                IndexSearcher bugReportSearcher,
@@ -64,35 +69,23 @@ public class BugLocatorRetriever {
         cosineSimilarity = new CosineSimilarity(bugReportTFCounts, bugReportIndexReader);
     }
 
+    /**
+     * Uses the technique presented in the paper to retrieve a ranked list of source code files
+     * where the bug reported is most likely to be located.
+     *
+     * @param bugReport The object representing the bug to locate.
+     * @return An ordered list of ranked source files.
+     * @throws IOException when an index read fails.
+     */
     public ScoreDoc[] locate(BugReport bugReport) throws IOException {
         if (bugReport.getCreationDate() == null) {
             return null;
         }
 
-        String queryString;
+        String queryString = getQueryString(bugReport);
 
-        switch (useField) {
-            case TITLE:
-                if (bugReport.getTitle() == null) {
-                    return null;
-                }
-                queryString = bugReport.getTitle();
-                break;
-            case DESCRIPTION:
-                if (bugReport.getDescription() == null) {
-                    return null;
-                }
-                queryString = bugReport.getDescription();
-                break;
-            case TITLE_AND_DESCRIPTION:
-                if (bugReport.getTitle() == null && bugReport.getDescription() == null) {
-                    return null;
-                }
-                queryString = bugReport.getTitle() + " " + bugReport.getDescription();
-                break;
-            default:
-                throw new IllegalArgumentException("useField must be one of the constants defined" +
-                        "in the enum");
+        if (queryString == null) {
+            return null;
         }
 
         maxRVSMScore = maxSimiScore = Float.MIN_VALUE;
@@ -150,6 +143,53 @@ public class BugLocatorRetriever {
         }
 
         return results;
+    }
+
+    public ScoreDoc[] getBaselineResults(BugReport bugReport) throws IOException {
+        String queryString = getQueryString(bugReport);
+        if (queryString == null) {
+            return null;
+        }
+
+        Map<String, Integer> queryFreqs = extractQueryFreqs(queryString);
+
+        BooleanQuery query = new BooleanQuery();
+
+        queryFreqs.forEach((term, __) ->
+                query.add(new BooleanClause(
+                        new TermQuery(new Term("text", term)), BooleanClause.Occur.SHOULD)));
+
+        return sourceTextSearcher.search(query, sourceTextIndexReader.maxDoc()).scoreDocs;
+    }
+
+    private String getQueryString(BugReport bugReport) {
+        String queryString;
+
+        switch (useField) {
+            case TITLE:
+                if (bugReport.getTitle() == null) {
+                    return null;
+                }
+                queryString = bugReport.getTitle();
+                break;
+            case DESCRIPTION:
+                if (bugReport.getDescription() == null) {
+                    return null;
+                }
+                queryString = bugReport.getDescription();
+                break;
+            case TITLE_AND_DESCRIPTION:
+                if (bugReport.getTitle() == null && bugReport.getDescription() == null) {
+                    return null;
+                }
+                queryString = bugReport.getTitle() + " " + bugReport.getDescription();
+                break;
+            default:
+                throw new IllegalArgumentException("useField must be one of the constants defined" +
+                        "in the enum");
+        }
+
+        return queryString;
     }
 
     private Map<Integer, Float> scoreBugReports(
