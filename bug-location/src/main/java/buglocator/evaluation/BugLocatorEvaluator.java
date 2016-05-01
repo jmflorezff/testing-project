@@ -1,13 +1,11 @@
 package buglocator.evaluation;
 
-import buglocator.indexing.data.BugReport;
 import buglocator.retrieval.BugLocatorRetriever;
 import buglocator.retrieval.RetrieverBase;
 import buglocator.retrieval.RetrieverBase.UseField;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.FSDirectory;
 
 import java.io.IOException;
@@ -49,10 +47,5 @@ public class BugLocatorEvaluator extends BaseRetrievalEvaluator {
                 alpha,
                 collectionExtrema[0],
                 collectionExtrema[1]);
-    }
-
-    @Override
-    protected ScoreDoc[] search(BugReport bugReport) throws IOException {
-        return retriever.locate(bugReport);
     }
 }

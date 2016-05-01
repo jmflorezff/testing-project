@@ -74,7 +74,7 @@ public abstract class BaseRetrievalEvaluator {
                 "processed-bug-reports", systemName + ".json").toFile())) {
             BugReport bugReport = gson.fromJson(jsonLine, BugReport.class);
 
-            ScoreDoc[] scoredFiles = search(bugReport);
+            ScoreDoc[] scoredFiles = retriever.locate(bugReport);
             // If the bug report doesn't have the required information it will return null
             if (scoredFiles == null) {
                 continue;
@@ -94,7 +94,7 @@ public abstract class BaseRetrievalEvaluator {
 
             int topRank = getTopRank(goldSet, scoredFiles);
 
-            if (topRank <= 10) {
+            if (topRank > 0 && topRank <= 10) {
                 top10s++;
                 if (topRank <= 5) {
                     top5s++;
@@ -203,13 +203,4 @@ public abstract class BaseRetrievalEvaluator {
      * @throws IOException
      */
     protected abstract RetrieverBase setupRetriever() throws IOException;
-
-    /**
-     * Returns a ranked list of source files where the bug is likely to be located.
-     *
-     * @param bugReport A bug report to be located.
-     * @return A ranked list of documents in descending order.
-     * @throws IOException
-     */
-    protected abstract ScoreDoc[] search(BugReport bugReport) throws IOException;
 }

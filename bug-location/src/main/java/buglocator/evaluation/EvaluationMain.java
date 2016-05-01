@@ -1,6 +1,6 @@
 package buglocator.evaluation;
 
-import buglocator.retrieval.BugLocatorRetriever;
+import buglocator.retrieval.RetrieverBase.UseField;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,8 +12,8 @@ import java.util.Arrays;
  * Fully evaluates this retrieval approach, creating indexes if they are not already found.
  */
 public class EvaluationMain {
-    private static final String[] systems = {"bookkeeper-4.1.0", "derby-10.9.1.0",
-            "lucene-4.0", "mahout-0.8", "openjpa-2.2.0", "pig-0.11.1", "solr-4.4.0",
+    private static final String[] systems = {"aspectj-1.5.3", "swt-3.1", "bookkeeper-4.1.0",
+            "derby-10.9.1.0", "lucene-4.0", "mahout-0.8", "openjpa-2.2.0", "pig-0.11.1", "solr-4.4.0",
             "tika-1.3", "zookeeper-3.4.5"};
 
     public static void main(String[] args) throws IOException {
@@ -33,7 +33,7 @@ public class EvaluationMain {
             return;
         }
 
-        System.out.println("System;Alpha;Top 1;Top 5;Top 10;MRR;MAP;" +
+        System.out.println("Method;System;Alpha;Top 1;Top 5;Top 10;MRR;MAP;" +
                 "Average Precision;Average Recall;Amount of Queries");
 
         for (String system : systems) {
@@ -43,25 +43,32 @@ public class EvaluationMain {
                 continue;
             }
 
+            float alpha = 0.3F;
+
             BugLocatorEvaluator bugLocatorEvaluator = new BugLocatorEvaluator(system,
-                    BugLocatorRetriever.UseField.TITLE_AND_DESCRIPTION,
+                    UseField.TITLE_AND_DESCRIPTION,
                     indexPath,
                     dataPath,
-                    0.3F);
+                    alpha);
+
+            BaselineEvaluator baselineEvaluator = new BaselineEvaluator(system,
+                    UseField.TITLE_AND_DESCRIPTION, indexPath, dataPath);
 
             EvaluationResult bugLocatorResult = bugLocatorEvaluator.evaluate();
+            EvaluationResult baselineResult = baselineEvaluator.evaluate();
 
             System.out.println(String.join(";", Arrays.<CharSequence>asList(
-                    bugLocatorResult.getSystem(),
-                    String.valueOf("alpha"),
-                    String.valueOf(bugLocatorResult.getTop1Precision()),
-                    String.valueOf(bugLocatorResult.getTop5Precision()),
-                    String.valueOf(bugLocatorResult.getTop10Precision()),
-                    String.valueOf(bugLocatorResult.getMeanReciprocalRank()),
-                    String.valueOf(bugLocatorResult.getMeanAveragePrecision()),
-                    String.valueOf(bugLocatorResult.getAveragePrecision()),
-                    String.valueOf(bugLocatorResult.getAverageRecall()),
-                    String.valueOf(bugLocatorResult.getActualQueries())
+                    "BugLocator",
+                    system,
+                    String.valueOf(alpha),
+                    bugLocatorResult.getCSVLine()
+            )));
+
+            System.out.println(String.join(";", Arrays.<CharSequence>asList(
+                    "Baseline",
+                    system,
+                    "-",
+                    baselineResult.getCSVLine()
             )));
         }
     }

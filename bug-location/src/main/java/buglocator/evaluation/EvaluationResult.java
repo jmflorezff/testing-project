@@ -71,4 +71,16 @@ public class EvaluationResult {
     public float getAverageRecall() {
         return averageRecall;
     }
+
+    public String getCSVLine() {
+        return String.join(";",
+                String.valueOf(top1Precision),
+                String.valueOf(top5Precision),
+                String.valueOf(top10Precision),
+                String.valueOf(meanReciprocalRank),
+                String.valueOf(meanAveragePrecision),
+                String.valueOf(averagePrecision),
+                String.valueOf(averageRecall),
+                String.valueOf(actualQueries));
+    }
 }
