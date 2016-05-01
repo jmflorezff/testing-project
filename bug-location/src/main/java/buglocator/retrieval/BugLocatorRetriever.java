@@ -16,12 +16,9 @@ import java.util.*;
 /**
  * Retriever that implements the BugLocator algorithm.
  */
-public class BugLocatorRetriever {
+public class BugLocatorRetriever extends RetrieverBase {
 
-    private UseField useField;
-    private IndexReader sourceTextIndexReader;
     private TermFrequencyDictionary sourceFileTFCounts;
-    private IndexSearcher sourceTextSearcher;
     private BugLocatorSimilarity bugLocatorSimilarity;
     private TermFrequencyDictionary bugReportTFCounts;
     private IndexSearcher bugReportSearcher;
@@ -35,29 +32,16 @@ public class BugLocatorRetriever {
     private float minRVSMScore;
     private float alpha;
 
-    public enum UseField {
-        TITLE,
-        DESCRIPTION,
-        TITLE_AND_DESCRIPTION
-    }
-
-    static {
-        // Set maximum clause count just in case
-        BooleanQuery.setMaxClauseCount(10000);
-    }
-
     public BugLocatorRetriever(UseField useField,
                                IndexSearcher sourceTextSearcher,
                                IndexSearcher bugReportSearcher,
                                float alpha,
                                int minSourceFileLength,
                                int maxSourceFileLength) {
-        this.useField = useField;
-        this.sourceTextSearcher = sourceTextSearcher;
+        super(useField, sourceTextSearcher);
         this.bugReportSearcher = bugReportSearcher;
         this.alpha = alpha;
 
-        sourceTextIndexReader = sourceTextSearcher.getIndexReader();
         bugReportIndexReader = bugReportSearcher.getIndexReader();
 
         sourceFileTFCounts = new TermFrequencyDictionary();
@@ -77,6 +61,7 @@ public class BugLocatorRetriever {
      * @return An ordered list of ranked source files.
      * @throws IOException when an index read fails.
      */
+    @Override
     public ScoreDoc[] locate(BugReport bugReport) throws IOException {
         if (bugReport.getCreationDate() == null) {
             return null;
@@ -143,53 +128,6 @@ public class BugLocatorRetriever {
         }
 
         return results;
-    }
-
-    public ScoreDoc[] getBaselineResults(BugReport bugReport) throws IOException {
-        String queryString = getQueryString(bugReport);
-        if (queryString == null) {
-            return null;
-        }
-
-        Map<String, Integer> queryFreqs = extractQueryFreqs(queryString);
-
-        BooleanQuery query = new BooleanQuery();
-
-        queryFreqs.forEach((term, __) ->
-                query.add(new BooleanClause(
-                        new TermQuery(new Term("text", term)), BooleanClause.Occur.SHOULD)));
-
-        return sourceTextSearcher.search(query, sourceTextIndexReader.maxDoc()).scoreDocs;
-    }
-
-    private String getQueryString(BugReport bugReport) {
-        String queryString;
-
-        switch (useField) {
-            case TITLE:
-                if (bugReport.getTitle() == null) {
-                    return null;
-                }
-                queryString = bugReport.getTitle();
-                break;
-            case DESCRIPTION:
-                if (bugReport.getDescription() == null) {
-                    return null;
-                }
-                queryString = bugReport.getDescription();
-                break;
-            case TITLE_AND_DESCRIPTION:
-                if (bugReport.getTitle() == null && bugReport.getDescription() == null) {
-                    return null;
-                }
-                queryString = bugReport.getTitle() + " " + bugReport.getDescription();
-                break;
-            default:
-                throw new IllegalArgumentException("useField must be one of the constants defined" +
-                        "in the enum");
-        }
-
-        return queryString;
     }
 
     private Map<Integer, Float> scoreBugReports(
@@ -308,24 +246,5 @@ public class BugLocatorRetriever {
         });
 
         return wrapperQuery;
-    }
-
-    private Map<String, Integer> extractQueryFreqs(String queryString) {
-        Map<String, Integer> queryFreqs = new HashMap<>();
-
-        Arrays.stream(queryString.split(" +")).forEach(w -> {
-            try {
-                // Only use the query words that appear in the corpus
-                if (queryFreqs.containsKey(w)) {
-                    queryFreqs.put(w, queryFreqs.get(w) + 1);
-                } else if (sourceTextIndexReader.docFreq(new Term("text", w)) > 0) {
-                    queryFreqs.put(w, 1);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        return queryFreqs;
     }
 }

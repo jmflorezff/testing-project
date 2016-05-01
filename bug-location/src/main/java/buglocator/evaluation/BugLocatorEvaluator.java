@@ -1,27 +1,19 @@
 package buglocator.evaluation;
 
 import buglocator.indexing.data.BugReport;
-import buglocator.indexing.utils.DateTimeJsonAdapter;
 import buglocator.retrieval.BugLocatorRetriever;
-import buglocator.retrieval.BugLocatorRetriever.UseField;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import buglocator.retrieval.RetrieverBase;
+import buglocator.retrieval.RetrieverBase.UseField;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.FSDirectory;
-import org.joda.time.DateTime;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Retrieval evaluator for the BugLocator approach.
@@ -29,7 +21,6 @@ import java.util.stream.Collectors;
 public class BugLocatorEvaluator extends BaseRetrievalEvaluator {
     private final UseField useField;
     private final float alpha;
-    private BugLocatorRetriever retriever;
 
     public BugLocatorEvaluator(
             String systemName, UseField useField, Path indexPath, Path dataPath, float alpha) {
@@ -39,7 +30,7 @@ public class BugLocatorEvaluator extends BaseRetrievalEvaluator {
     }
 
     @Override
-    protected void setup() throws IOException {
+    protected RetrieverBase setupRetriever() throws IOException {
         FSDirectory bugReportsIndexDirectory =
                 FSDirectory.open(indexPath.resolve(Paths.get("bug-reports", systemName)));
 
@@ -52,7 +43,7 @@ public class BugLocatorEvaluator extends BaseRetrievalEvaluator {
         Integer[] collectionExtrema =
                 Arrays.stream(stats.split("\n")).map(Integer::parseInt).toArray(Integer[]::new);
 
-        retriever = new BugLocatorRetriever(useField,
+        return new BugLocatorRetriever(useField,
                 sourceSearcher,
                 bugReportSearcher,
                 alpha,

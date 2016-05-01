@@ -2,7 +2,7 @@ package buglocator.evaluation;
 
 import buglocator.indexing.data.BugReport;
 import buglocator.indexing.utils.DateTimeJsonAdapter;
-import buglocator.retrieval.BugLocatorRetriever;
+import buglocator.retrieval.RetrieverBase;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -29,6 +29,7 @@ public abstract class BaseRetrievalEvaluator {
     protected final String systemName;
     protected final Path indexPath;
     protected IndexSearcher sourceSearcher;
+    protected RetrieverBase retriever;
     private Map<String, Integer> fileIDCache = new HashMap<>();
     private Path dataPath;
 
@@ -55,7 +56,7 @@ public abstract class BaseRetrievalEvaluator {
         sourceSearcher =
                 new IndexSearcher(DirectoryReader.open(sourceIndexDirectory));
 
-        setup();
+        retriever = setupRetriever();
 
         int top1s = 0;
         int top5s = 0;
@@ -197,11 +198,11 @@ public abstract class BaseRetrievalEvaluator {
     }
 
     /**
-     * Initializes all state necessary to perform an evaluation.
+     * Initializes the retriever instance used to perform the evaluation.
      *
      * @throws IOException
      */
-    protected abstract void setup() throws IOException;
+    protected abstract RetrieverBase setupRetriever() throws IOException;
 
     /**
      * Returns a ranked list of source files where the bug is likely to be located.
