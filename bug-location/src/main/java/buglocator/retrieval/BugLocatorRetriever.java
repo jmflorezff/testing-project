@@ -92,8 +92,7 @@ public class BugLocatorRetriever extends RetrieverBase {
                 bugReportSearcher.search(relatedBugsQuery, bugReportIndexReader.numDocs());
         Map<Integer, Float> simiScores = scoreBugReports(queryFreqs, topBugReports.scoreDocs);
 
-        Map<Integer, Float> totalScores =
-                new HashMap<>((topSourceFiles.totalHits + simiScores.size()) / 2);
+        Map<Integer, Float> totalScores = new HashMap<>();
 
         float rVSMNormalizeVal = maxRVSMScore - minRVSMScore;
         Arrays.stream(topSourceFiles.scoreDocs).forEach(sd -> {
@@ -135,9 +134,14 @@ public class BugLocatorRetriever extends RetrieverBase {
         Map<Integer, List<ScoreDoc>> fixedBy = new HashMap<>();
         Map<ScoreDoc, Integer> amountOfFixedFiles = new HashMap<>();
 
+        // Calculate the norm of the query vector: square root of the sum of square term frequencies
+        float queryNorm = (float) Math.sqrt(queryFreqs.entrySet().stream()
+                .map(e -> (float) Math.pow(e.getValue(), 2))
+                .reduce((x, y) -> x + y).get());
+
         Arrays.stream(scoreDocs).forEach(sd -> {
             try {
-                sd.score = cosineSimilarity.calculate(queryFreqs, sd.doc);
+                sd.score = cosineSimilarity.calculate(queryFreqs, queryNorm, sd.doc);
                 if (sd.score == 0) {
                     // It's a false positive
                     return;
@@ -221,9 +225,22 @@ public class BugLocatorRetriever extends RetrieverBase {
     }
 
     private void scoreSourceFiles(Map<String, Integer> queryFreqs, ScoreDoc[] scoreDocs) {
+        int numDocs = sourceTextIndexReader.numDocs();
+        float queryNorm = (float) (1 / Math.sqrt(queryFreqs.entrySet().stream()
+                .map(e -> {
+                    String termString = e.getKey();
+                    int termQueryFreq = e.getValue();
+                    // Dampened term frequency value in query
+                    float dampTf = (float) (Math.log(termQueryFreq) + 1);
+                    // idf value for term
+                    float idf = (float) Math.log(numDocs / bugLocatorSimilarity.getDocFreq(termString));
+                    return (float) Math.pow(dampTf * idf, 2);
+                })
+                .reduce((x, y) -> x + y).get()));
+
         Arrays.stream(scoreDocs).forEach(sd -> {
             try {
-                sd.score = bugLocatorSimilarity.calculate(queryFreqs, sd.doc);
+                sd.score = bugLocatorSimilarity.calculate(queryFreqs, queryNorm, sd.doc);
                 updateExtremeRVSMScores(sd.score);
             } catch (IOException e) {
                 e.printStackTrace();

@@ -12,9 +12,9 @@ import java.util.Arrays;
  * Fully evaluates this retrieval approach, creating indexes if they are not already found.
  */
 public class EvaluationMain {
-    private static final String[] systems = {"aspectj-1.5.3", "swt-3.1", "bookkeeper-4.1.0",
+    private static final String[] systems = {/*"eclipse-3.1", "aspectj-1.5.3",*/ "swt-3.1"/*, "bookkeeper-4.1.0",
             "derby-10.9.1.0", "lucene-4.0", "mahout-0.8", "openjpa-2.2.0", "pig-0.11.1", "solr-4.4.0",
-            "tika-1.3", "zookeeper-3.4.5"};
+            "tika-1.3", "zookeeper-3.4.5"*/};
 
     public static void main(String[] args) throws IOException {
         Path dataPath = Paths.get("..", "data");

@@ -22,6 +22,7 @@ public abstract class BaseSimilarity {
         this.reader = reader;
     }
 
-    public abstract float calculate(Map<String, Integer> queryFrequencies, int docId)
+    public abstract float calculate(
+            Map<String, Integer> queryFrequencies, float queryNorm, int docId)
             throws IOException;
 }

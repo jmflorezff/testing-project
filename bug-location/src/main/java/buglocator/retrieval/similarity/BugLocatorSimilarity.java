@@ -33,30 +33,15 @@ public class BugLocatorSimilarity extends BaseSimilarity {
     }
 
     @Override
-    public float calculate(Map<String, Integer> queryFrequencies, int docId) throws IOException {
+    public float calculate(Map<String, Integer> queryFrequencies, float queryNorm, int docId) throws IOException {
         Terms termVector = reader.getTermVector(docId, "text");
 
         // Stats needed to calculate the score
-        int docLen = (int) termVector.size();
-
-        // Normalization factor according to a logistic function, it gives more weight to longer
-        // documents
-        float docLenNorm = (float) (1 / (1 +
-                exp(-(docLen - minDocumentLength) / doclenRange)));
+        int docLen = 0;
 
         // First part: Multiplicative inverse of the square root of the sum of squared tf-idf
         // values for every term in the query
-        float firstPart = (float) (1 / sqrt(queryFrequencies.entrySet().stream()
-                .map(e -> {
-                    String termString = e.getKey();
-                    int termQueryFreq = e.getValue();
-                    // Dampened term frequency value in query
-                    float dampTf = (float) (Math.log(termQueryFreq) + 1);
-                    // idf value for term
-                    float idf = (float) Math.log(numDocs / getDocFreq(termString));
-                    return (float) pow(dampTf * idf, 2);
-                })
-                .reduce(floatAdder).get()));
+        float firstPart = 1 / queryNorm;
 
         // Second part: same as first part but for document
         float secondPart = 0;
@@ -64,10 +49,17 @@ public class BugLocatorSimilarity extends BaseSimilarity {
         BytesRef term;
         while ((term = termsEnum.next()) != null) {
             String termString = term.utf8ToString();
-            secondPart += pow((Math.log(termsEnum.totalTermFreq()) + 1) *
+            int totalTermFreq = (int) termsEnum.totalTermFreq();
+            docLen += totalTermFreq;
+            secondPart += pow((Math.log(totalTermFreq) + 1) *
                     Math.log(numDocs / getDocFreq(termString)), 2);
         }
         secondPart = (float) (1 / sqrt(secondPart));
+
+        // Normalization factor according to a logistic function, it gives more weight to longer
+        // documents
+        float docLenNorm = (float) (1 / (1 +
+                exp(-(docLen - minDocumentLength) / doclenRange)));
 
         // Combination of tf-idf for common terms
         float thirdPart = queryFrequencies.entrySet().stream().map(e -> {
@@ -84,7 +76,7 @@ public class BugLocatorSimilarity extends BaseSimilarity {
         return docLenNorm * firstPart * secondPart * thirdPart;
     }
 
-    private int getDocFreq(String termString) {
+    public int getDocFreq(String termString) {
         // If document frequency for the current term is not in the dictionary, read it from
         // the index
         if (!documentFrequencies.containsKey(termString)) {

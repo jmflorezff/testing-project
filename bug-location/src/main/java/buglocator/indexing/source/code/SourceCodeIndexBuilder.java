@@ -9,6 +9,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 /**
  * Builds a Lucene index for a corpus of source code file texts. Should not be reused.
@@ -16,6 +17,8 @@ import java.nio.file.Path;
 public class SourceCodeIndexBuilder extends BaseIndexBuilder<SourceFileText> {
     private StatCollectingSimilarity similarity = new StatCollectingSimilarity();
     private boolean used = false;
+    private int minDocumentLength = Integer.MAX_VALUE;
+    private int maxDocumentLength = Integer.MIN_VALUE;
 
     public SourceCodeIndexBuilder() {
         super(SourceFileText.class);
@@ -38,6 +41,10 @@ public class SourceCodeIndexBuilder extends BaseIndexBuilder<SourceFileText> {
         document.add(new StringField("path", item.getFilePath(), Field.Store.YES));
         document.add(new Field("text", item.getText(), termVectorsFieldType));
 
+        int wordCount = countSpaces(item.getText()) + 1;
+        minDocumentLength = Math.min(minDocumentLength, wordCount);
+        maxDocumentLength = Math.max(maxDocumentLength, wordCount);
+
         return document;
     }
 
@@ -49,13 +56,24 @@ public class SourceCodeIndexBuilder extends BaseIndexBuilder<SourceFileText> {
         return indexBuilderConfig;
     }
 
+    private int countSpaces(String string) {
+        int count = 0;
+        for (char c : string.toCharArray()) {
+            if (c == ' ') {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
     public int getMaxDocumentLength() {
         if (!used) {
             throw new IllegalStateException("Can't get collection stats without indexing a corpus" +
                     "first");
         }
 
-        return similarity.getMaxDocumentLength();
+        return maxDocumentLength;
     }
 
     public int getMinDocumentLength() {
@@ -64,6 +82,6 @@ public class SourceCodeIndexBuilder extends BaseIndexBuilder<SourceFileText> {
                     "first");
         }
 
-        return similarity.getMinDocumentLength();
+        return minDocumentLength;
     }
 }

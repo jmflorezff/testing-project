@@ -16,11 +16,7 @@ public class CosineSimilarity extends BaseSimilarity {
     }
 
     @Override
-    public float calculate(Map<String, Integer> queryFrequencies, int docId) throws IOException {
-        // Calculate the norm of the query vector: square root of the sum of square term frequencies
-        float queryNorm = (float) Math.sqrt(queryFrequencies.entrySet().stream()
-                .map(e -> (float) Math.pow(e.getValue(), 2))
-                .reduce(floatAdder).get());
+    public float calculate(Map<String, Integer> queryFrequencies, float queryNorm, int docId) throws IOException {
 
         // Calculate norm of the document, same as for the query but using the term vector stored
         // in the index
