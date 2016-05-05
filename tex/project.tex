@@ -1,6 +1,7 @@
 \documentclass{sig-alternate-05-2015}
 \usepackage{graphicx}
 \graphicspath{ {images/} }
+\usepackage{lipsum}
 
 \begin{document}
 \title{Software Testing, Validation and Verification Class Project Mid-Term Report}
@@ -18,6 +19,7 @@ Juan Manuel Florez Fandino, Raul Quinonez Tirado \\
 
 \maketitle
 \begin{abstract}
+
 Faults or bugs are an inevitable aspect of computer programming. Bug reports are normally used to let developers know 
 there is an error in the code, but they rarely provide all the information necessary to determine where the bug must be 
 fixed at first glance. There is also no standardization or formal method of submitting bug reports. While some bug reports are well documented, others lack organization and structure. This leaves a great burden to programmers that will have to revise large sections of the software in order to locate the fault. This paper proposes a solution to this problem and improves the programmer's job by having them focus on fixing the actual problem and it minimizes the time needed just to locate the fault. In this project, we aim at addressing this issue by implementing an Information Retrieval (IR) 
@@ -325,10 +327,24 @@ only the description and using both. The results will be evaluated using the fol
 \includegraphics[scale=.5]{ranking}
 \subsection{Experimental Data}
 
-\subsection{Evaluation}
+\begin{figure}
+\includegraphics[scale=.38]{json}
+	\caption{Processed bug reports}
+\end{figure}
+
+
+
+
+\begin{figure}
+\includegraphics[scale=.38]{jsonSource}
+	\caption{Processed source code files }
+\end{figure}
+ 
+\subsection{Evaluation and Experiments}
 
 \subsection{Comparison Against Lucene}
 \subsection{Limitations}
+\subsection{Performance}
 
 \section{Related Work}
 
@@ -354,7 +370,8 @@ us to propose candidates for future work.
 \bibliography{project}
 \balancecolumns
 
-\begin{table}
+
+\begin{table}[t]
     \begin{tabular}{|l|l|l|l|l|l|l|l|l|l|}
     \hline
         System           &     Alpha &     Top 1   &     Top 5   &     Top 10  &     MRR     &     MAP     &     Avg.   Precision &     Avg.   Recall & Queries \\ \hline
