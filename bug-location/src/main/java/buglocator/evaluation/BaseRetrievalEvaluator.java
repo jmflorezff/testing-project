@@ -74,7 +74,7 @@ public abstract class BaseRetrievalEvaluator {
                 "processed-bug-reports", systemName + ".json").toFile())) {
             BugReport bugReport = gson.fromJson(jsonLine, BugReport.class);
 
-            ScoreDoc[] scoredFiles = retriever.locate(bugReport);
+            ScoreDoc[] scoredFiles = retriever.locate(bugReport, 10);
             // If the bug report doesn't have the required information it will return null
             if (scoredFiles == null) {
                 continue;

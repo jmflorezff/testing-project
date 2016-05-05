@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.lang.Math.exp;
 import static java.lang.Math.sqrt;
 import static java.lang.StrictMath.pow;
 
@@ -23,13 +22,17 @@ public class BugLocatorSimilarity extends BaseSimilarity {
     private final int minDocumentLength;
     private final float numDocs;
     private final float doclenRange;
+    private final int minus3Sigma;
+    private final int plus3Sigma;
 
     public BugLocatorSimilarity(TermFrequencyDictionary termFrequencies, IndexReader reader,
-                                int minDocumentLength, int maxDocumentLength) {
+                                int minus3Sigma, int plus3Sigma) {
         super(termFrequencies, reader);
-        this.minDocumentLength = minDocumentLength;
+        this.minDocumentLength = Math.max(0, minus3Sigma);
+        this.minus3Sigma = minus3Sigma;
+        this.plus3Sigma = plus3Sigma;
         numDocs = reader.numDocs();
-        doclenRange = maxDocumentLength - minDocumentLength;
+        doclenRange = plus3Sigma - minDocumentLength;
     }
 
     @Override
@@ -51,15 +54,24 @@ public class BugLocatorSimilarity extends BaseSimilarity {
             String termString = term.utf8ToString();
             int totalTermFreq = (int) termsEnum.totalTermFreq();
             docLen += totalTermFreq;
-            secondPart += pow((Math.log(totalTermFreq) + 1) *
-                    Math.log(numDocs / getDocFreq(termString)), 2);
+            float tfIdfWeight = (float) ((Math.log(totalTermFreq) + 1) *
+                    Math.log(numDocs / getDocFreq(termString)));
+            secondPart += pow(tfIdfWeight, 2);
         }
         secondPart = (float) (1 / sqrt(secondPart));
 
         // Normalization factor according to a logistic function, it gives more weight to longer
         // documents
-        float docLenNorm = (float) (1 / (1 +
-                exp(-(docLen - minDocumentLength) / doclenRange)));
+        float docLenNorm;
+        if (docLen < minus3Sigma) {
+            docLenNorm = 0.5F;
+        } else if (docLen > plus3Sigma) {
+            docLenNorm = 1;
+        } else {
+            float n = (6 * (docLen - minDocumentLength)) / (doclenRange);
+            float power = (float) Math.exp(n);
+            docLenNorm = power / (1 + power);
+        }
 
         // Combination of tf-idf for common terms
         float thirdPart = queryFrequencies.entrySet().stream().map(e -> {
@@ -73,7 +85,9 @@ public class BugLocatorSimilarity extends BaseSimilarity {
             }
         }).reduce(floatAdder).get();
 
-        return docLenNorm * firstPart * secondPart * thirdPart;
+        float tfIdfScore = firstPart * secondPart * thirdPart;
+
+        return docLenNorm * tfIdfScore;
     }
 
     public int getDocFreq(String termString) {

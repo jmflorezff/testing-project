@@ -61,7 +61,6 @@ public abstract class BaseIndexBuilder<T> {
                         indexWriter.addDocument(newDocument);
                     }
                 } catch (IllegalArgumentException e) {
-                    System.out.println("This makes me die:\n" + line);
                 }
             }
         }

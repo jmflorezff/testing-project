@@ -2,7 +2,6 @@ package buglocator.indexing.source.code;
 
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -23,7 +22,7 @@ public class BuildSourceCodeIndexMain {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
                     throws IOException {
-                if(!file.toString().endsWith(".json")){
+                if (!file.toString().endsWith(".json")) {
                     // Only read JSON files
                     return FileVisitResult.CONTINUE;
                 }
@@ -34,13 +33,6 @@ public class BuildSourceCodeIndexMain {
                 FileUtils.forceMkdir(indexPath.toFile());
                 SourceCodeIndexBuilder indexBuilder = new SourceCodeIndexBuilder();
                 indexBuilder.buildIndex(file, indexPath);
-
-                int minDocLength = indexBuilder.getMinDocumentLength();
-                int maxDocumentLength = indexBuilder.getMaxDocumentLength();
-
-                // Write maximum and minimum document length to file in index directory.
-                FileUtils.write(new File(Paths.get(indexPath.toString(), "stats.txt").toString()),
-                        minDocLength + "\n" + maxDocumentLength);
 
                 return FileVisitResult.CONTINUE;
             }

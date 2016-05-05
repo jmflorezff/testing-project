@@ -62,7 +62,7 @@ public class BugLocatorRetriever extends RetrieverBase {
      * @throws IOException when an index read fails.
      */
     @Override
-    public ScoreDoc[] locate(BugReport bugReport) throws IOException {
+    public ScoreDoc[] locate(BugReport bugReport, int maxResults) throws IOException {
         if (bugReport.getCreationDate() == null) {
             return null;
         }
@@ -116,12 +116,12 @@ public class BugLocatorRetriever extends RetrieverBase {
             totalScores.put(docId, finalScore);
         });
 
-        ScoreDoc[] results = new ScoreDoc[totalScores.size()];
-
         Object[] sortedEntries = totalScores.entrySet().stream().sorted(
                 (o1, o2) -> Float.compare(o2.getValue(), o1.getValue())).toArray();
 
-        for (int i = 0; i < sortedEntries.length; i++) {
+        ScoreDoc[] results = new ScoreDoc[Math.min(maxResults, sortedEntries.length)];
+
+        for (int i = 0; i < results.length; i++) {
             Map.Entry<Integer, Float> e = (Map.Entry<Integer, Float>) sortedEntries[i];
             results[i] = new ScoreDoc(e.getKey(), e.getValue());
         }
@@ -226,7 +226,7 @@ public class BugLocatorRetriever extends RetrieverBase {
 
     private void scoreSourceFiles(Map<String, Integer> queryFreqs, ScoreDoc[] scoreDocs) {
         int numDocs = sourceTextIndexReader.numDocs();
-        float queryNorm = (float) (1 / Math.sqrt(queryFreqs.entrySet().stream()
+        float queryNorm = (float) Math.sqrt(queryFreqs.entrySet().stream()
                 .map(e -> {
                     String termString = e.getKey();
                     int termQueryFreq = e.getValue();
@@ -236,7 +236,7 @@ public class BugLocatorRetriever extends RetrieverBase {
                     float idf = (float) Math.log(numDocs / bugLocatorSimilarity.getDocFreq(termString));
                     return (float) Math.pow(dampTf * idf, 2);
                 })
-                .reduce((x, y) -> x + y).get()));
+                .reduce((x, y) -> x + y).get());
 
         Arrays.stream(scoreDocs).forEach(sd -> {
             try {

@@ -16,7 +16,7 @@ public class BaselineRetriever extends RetrieverBase {
     }
 
     @Override
-    public ScoreDoc[] locate(BugReport bugReport) throws IOException {
+    public ScoreDoc[] locate(BugReport bugReport, int maxResults) throws IOException {
         String queryString = getQueryString(bugReport);
         if (queryString == null) {
             return null;
@@ -32,6 +32,6 @@ public class BaselineRetriever extends RetrieverBase {
             query.add(new BooleanClause(termQuery, BooleanClause.Occur.SHOULD));
         });
 
-        return sourceTextSearcher.search(query, sourceTextIndexReader.maxDoc()).scoreDocs;
+        return sourceTextSearcher.search(query, maxResults).scoreDocs;
     }
 }
