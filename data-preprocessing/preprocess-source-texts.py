@@ -16,7 +16,6 @@ import sys
 
 # Terms we want to ignore: java API class names, stop words and java keywords
 IGNORE_TERMS_FILE_NAMES = (
-    'java-api-classes.txt',
     'stop-words.txt',
     'java-keywords.txt',
 )
@@ -35,7 +34,8 @@ def main():
             ignore_terms.extend(term.strip() for term in file)
             
     # Create our custom tokenizer, it receives the terms we want to ignore
-    preprocessor = Preprocessor(min_length=3, ignore=ignore_terms)
+    preprocessor = Preprocessor(word_chars='a-zA-Z0-9', inter_chars="'",
+                                min_length=3, ignore=ignore_terms)
     
     for line in sys.stdin:
         src_file = json.loads(line)

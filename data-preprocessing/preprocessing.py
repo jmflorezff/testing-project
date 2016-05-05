@@ -11,31 +11,26 @@ import re
 
 
 class Preprocessor(object):
-    def __init__(self, word_characters=None, split_characters=None,
+    def __init__(self, word_chars=None, split_chars=None,
                  inter_chars=None, min_length=3, ignore=None):
-        if word_characters:
-            word_characters = re.escape(word_characters)
-        else:
-            word_characters = r'\w$'
+        if not word_chars:
+            word_chars = r'\w$'
 
-        if split_characters:
-            split_characters = re.escape(split_characters)
-        else:
-            split_characters = r'_$-'
+        if not split_chars:
+            split_chars = r'_$-'
 
-        if inter_chars:
-            inter_chars = re.escape(inter_chars)
-        else:
+        if not inter_chars:
             inter_chars = r"'-"
             
         if ignore:
             self.ignore = set(e.lower() for e in ignore)
         else:
             self.ignore = []
+        self.strip_chars = split_chars + inter_chars
         self.min_length = min_length
-        self.id_split_re = re.compile(r'[%s]' % split_characters)
+        self.id_split_re = re.compile(r'[%s]' % split_chars)
         self.tokenizer = nltk.tokenize.RegexpTokenizer(
-            r"[{0}]+(?:[{1}][{0}]+)*".format(word_characters, inter_chars))
+            r"[{0}]+(?:[{1}][{0}]+)*".format(word_chars, inter_chars))
         self.stemmer = nltk.stem.PorterStemmer()
 
     def is_numeric(self, token):
@@ -94,7 +89,7 @@ class Preprocessor(object):
                 
                 # Stem all new tokens and get rid of delimiters in the edges
                 # of words
-                stemmed = [self.stemmer.stem(t).strip("'-_$")
+                stemmed = [self.stemmer.stem(t).strip(self.strip_chars)
                            for t in new_tokens]
 
                 # Add the stemmed tokens if they are valid after stemming
