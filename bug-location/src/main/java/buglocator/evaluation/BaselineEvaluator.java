@@ -20,6 +20,11 @@ public class BaselineEvaluator extends BaseRetrievalEvaluator {
 
     @Override
     protected RetrieverBase setupRetriever() throws IOException {
-        return new BaselineRetriever(useField, sourceSearcher);
+        return new BaselineRetriever(useField, sourceSearcher, sourceSearcher);
+    }
+
+    @Override
+    protected String getLogTag() {
+        return "Baseline (VSM)";
     }
 }

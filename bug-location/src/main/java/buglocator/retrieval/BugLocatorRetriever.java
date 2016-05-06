@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class BugLocatorRetriever extends RetrieverBase {
 
-    private TermFrequencyDictionary sourceFileTFCounts;
+    TermFrequencyDictionary sourceFileTFCounts;
     private BugLocatorSimilarity bugLocatorSimilarity;
     private TermFrequencyDictionary bugReportTFCounts;
     private IndexSearcher bugReportSearcher;
@@ -253,7 +253,7 @@ public class BugLocatorRetriever extends RetrieverBase {
         maxRVSMScore = score > maxRVSMScore ? score : maxRVSMScore;
     }
 
-    private BooleanQuery createSourceFilesQuery(Map<String, Integer> queryFreqs,
+    protected BooleanQuery createSourceFilesQuery(Map<String, Integer> queryFreqs,
                                                 TermFrequencyDictionary tfCounts) {
         BooleanQuery wrapperQuery = new BooleanQuery();
         queryFreqs.forEach((term, freq) -> {

@@ -19,11 +19,14 @@ import static java.lang.StrictMath.pow;
  */
 public class BugLocatorSimilarity extends BaseSimilarity {
     private final Map<String, Integer> documentFrequencies = new HashMap<>();
+    final Map<Integer, Float> documentNorms = new HashMap<>();
+    private final Map<Integer, Integer> documentLengths = new HashMap<>();
     private final int minDocumentLength;
-    private final float numDocs;
+    final float numDocs;
     private final float doclenRange;
     private final int minus3Sigma;
     private final int plus3Sigma;
+    private Map<Integer, Float> normalizationFactors = new HashMap<>();
 
     public BugLocatorSimilarity(TermFrequencyDictionary termFrequencies, IndexReader reader,
                                 int minus3Sigma, int plus3Sigma) {
@@ -37,40 +40,53 @@ public class BugLocatorSimilarity extends BaseSimilarity {
 
     @Override
     public float calculate(Map<String, Integer> queryFrequencies, float queryNorm, int docId) throws IOException {
-        Terms termVector = reader.getTermVector(docId, "text");
-
-        // Stats needed to calculate the score
-        int docLen = 0;
-
         // First part: Multiplicative inverse of the square root of the sum of squared tf-idf
         // values for every term in the query
         float firstPart = 1 / queryNorm;
 
         // Second part: same as first part but for document
-        float secondPart = 0;
-        TermsEnum termsEnum = termVector.iterator();
-        BytesRef term;
-        while ((term = termsEnum.next()) != null) {
-            String termString = term.utf8ToString();
-            int totalTermFreq = (int) termsEnum.totalTermFreq();
-            docLen += totalTermFreq;
-            float tfIdfWeight = (float) ((Math.log(totalTermFreq) + 1) *
-                    Math.log(numDocs / getDocFreq(termString)));
-            secondPart += pow(tfIdfWeight, 2);
+        float documentTfIdfNorm;
+        if (!documentNorms.containsKey(docId)) {
+            Terms termVector = reader.getTermVector(docId, "text");
+            float tfIdfNormAccum = 0;
+            int docLenAccum = 0;
+            TermsEnum termsEnum = termVector.iterator();
+            BytesRef term;
+            while ((term = termsEnum.next()) != null) {
+                String termString = term.utf8ToString();
+                int totalTermFreq = (int) termsEnum.totalTermFreq();
+                docLenAccum += totalTermFreq;
+                float tfIdfWeight = (float) ((Math.log(totalTermFreq) + 1) *
+                        Math.log(numDocs / getDocFreq(termString)));
+                tfIdfNormAccum += pow(tfIdfWeight, 2);
+            }
+            documentTfIdfNorm = (float) sqrt(tfIdfNormAccum);
+
+            documentNorms.put(docId, documentTfIdfNorm);
+            documentLengths.put(docId, docLenAccum);
+        } else {
+            documentTfIdfNorm = documentNorms.get(docId);
         }
-        secondPart = (float) (1 / sqrt(secondPart));
+
+        float secondPart = 1 / documentTfIdfNorm;
 
         // Normalization factor according to a logistic function, it gives more weight to longer
         // documents
         float docLenNorm;
-        if (docLen < minus3Sigma) {
-            docLenNorm = 0.5F;
-        } else if (docLen > plus3Sigma) {
-            docLenNorm = 1;
+        if (!normalizationFactors.containsKey(docId)) {
+            int docLen = documentLengths.get(docId);
+            if (docLen < minus3Sigma) {
+                docLenNorm = 0.5F;
+            } else if (docLen > plus3Sigma) {
+                docLenNorm = 1;
+            } else {
+                float n = (6 * (docLen - minDocumentLength)) / (doclenRange);
+                float power = (float) Math.exp(n);
+                docLenNorm = power / (1 + power);
+            }
+            normalizationFactors.put(docId, docLenNorm);
         } else {
-            float n = (6 * (docLen - minDocumentLength)) / (doclenRange);
-            float power = (float) Math.exp(n);
-            docLenNorm = power / (1 + power);
+            docLenNorm = normalizationFactors.get(docId);
         }
 
         // Combination of tf-idf for common terms
