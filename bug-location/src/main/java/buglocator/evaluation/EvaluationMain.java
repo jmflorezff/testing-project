@@ -131,7 +131,7 @@ public class EvaluationMain {
 
         float minutes = runTime / 60000F;
         int minutesWhole = (int) Math.floor(minutes);
-        float seconds = (minutes - minutesWhole) * 1000F;
+        float seconds = (minutes - minutesWhole) * 60F;
         int secondsWhole = (int) Math.floor(seconds);
 
         System.out.println(String.format("Finished analysis in %d minutes and %d seconds",
