@@ -1,10 +1,10 @@
 \documentclass{sig-alternate-05-2015}
 \usepackage{graphicx}
 \graphicspath{ {images/} }
-\usepackage{lipsum}
+\usepackage{amsmath}
 
 \begin{document}
-\title{Software Testing, Validation and Verification Class Project Mid-Term Report}
+\title{An Empirical Evaluation of BugLocatorII}
 
 \numberofauthors{1}
 
@@ -20,11 +20,9 @@ Juan Manuel Florez Fandino, Raul Quinonez Tirado \\
 \maketitle
 \begin{abstract}
 
-Faults or bugs are an inevitable aspect of computer programming. Bug reports are normally used to let developers know 
+Faults or bugs are an inevitable part of software development. Bug reports are normally used to let developers know 
 there is an error in the code, but they rarely provide all the information necessary to determine where the bug must be 
-fixed at first glance. There is also no standardization or formal method of submitting bug reports. While some bug reports are well documented, others lack organization and structure. This leaves a great burden to programmers that will have to revise large sections of the software in order to locate the fault. This paper proposes a solution to this problem and improves the programmer's job by having them focus on fixing the actual problem and it minimizes the time needed just to locate the fault. In this project, we aim at addressing this issue by implementing an Information Retrieval (IR) 
-system that will leverage the information found in bug reports to identify the possible locations in the source code 
-where the fault is located.
+fixed at first glance. There is also no standardization or formal method of submitting bug reports. This hinders the performance of programmers, who will potentially have to revise large sections of code in order to locate the fault. This paper proposes a reimplementation of a tool for bug-report-based fault localization and an empirical study to assess its performance on a set of bug reports collected manually. We conclude with a comparison of this method with a baseline approach using standard Information Retrieval techniques.
 \end{abstract}
 
 %
@@ -73,13 +71,13 @@ where the fault is located.
 %
 \printccsdesc
 
-\keywords{Bug localization; information retrieval; corpus creation}
+\keywords{Bug localization; information retrieval; text processing; vector space model}
 
 \section{Introduction}
 Due to the inherent complexity of software products, the occurrence of bugs is inevitable. Many different methods
 are used to prevent and repair faults in source code. However, on occasion these faults are not identified during
 testing, instead being uncovered by the final users. Bug reports are used by both open source communities and
-software development companies, and they allow users  to communicate software failures to the development team.
+software development companies, and they allow users to communicate software failures to the development team.
 These reports are usually submitted by making use of a bug-tracking system.
 Once a bug report is received the usual process starts by assessing the severity of the bug and then assigning a
 developer or group of developers the task of locating and fixing the bug.
@@ -99,14 +97,17 @@ a collection of source code files \cite{le2014}. The system then will output a r
 the bug is likely to be located. Developers will then look at the highest ranked locations for the bug first. 
 Our goal for this project is to test a particular approach on a set of bug reports collected by our team.
 
+The source code and data for this project are hosted on GitHub\footnote{https://github.com/jmflorezff/testing-project}.
+
 \section{Problem}
-Automating the process of identifying faulty files in a software project using bug reports as input in an efficient manner. Given the complexity of software system, our tool aims at easing the programmer's job by presenting a ranked list of source code files where the fault could be located. Accuracy on the top ranked files is very important because that indicates the files that will be searched first for a given fault. 
+Reimplementing a bug-report-based bug localization technique and testing it empirically on data collected by our team. We call
+out implementation \emph{BugLocatorII}. The implementation will later be tested with data collected from open-source Java projects.
 
 \section{Background}
 
 \subsection{IR-Based Bug Localization}
 Information Retrieval (IR) can be defined as the process of finding material of an unstructured nature in a large 
-collection to satisfy a certain information need \cite{manning2008}. One known application of this discipline 
+collection to satisfy a certain information need \cite{manning2008}. One widely known application of this discipline 
 is internet search engines. These allow efficient search over millions of different web pages with the information need 
 being presented in the form of a natural-language \textit{query} by a user. IR usually operates on a \textit{corpus}, 
 i.e. a collection of documents which can be natural-language text such as books or news articles, but also 
@@ -140,7 +141,7 @@ the precision to construct a reasonably reliable gold set.
 The method that most of these approaches propose is \cite{sliwerski2005}:
 \begin{enumerate}
 	\item Begin with the change history of a software project and the bug-tracking system for the project.
-	A bug tracker is not necessary but it help increase the confidence in extracted candidate bug fixes.
+	A bug tracker is not necessary but it helps increase the confidence in extracted candidate bug fixes.
 	
 	\item Examine the commit messages for the software release being considered and extract anything resembling
 	an issue identifier. The specific format of these depends on the specific bug-tracking system used by the
@@ -158,29 +159,34 @@ potentially any number included in a commit message for other reasons could be i
 if it exists in the bug-tracking system by chance. Additionally, not all fixed bugs get marked as such in these
 systems, and some of them get fixed without explicitly being assigned to a developer.
 
-\section{Implementation Plan}
+\section{Implementation}
 We propose the reimplementation for bug-localization tool known as BugLocator \cite{zhou2012}. This tool uses IR
 methods to locate bugs in a code base using bug reports as input. The tool also leverages document length and
 previous recorded bug fixes to improve the results. The idea behind this is that long code files are more likely
-to contain bugs than shorter files, and files that have been fixed before are similarly more likely to contain
-defects than those that haven't been modified as much. The technique uses file-level granularity, i.e. given %Ref
+to contain bugs than shorter files, and bug whose descriptions are similar to the one being addressed and have been fixed in the
+past are likely to be located in the same files. The technique uses file-level granularity, i.e. given %Ref
 a bug report, the result will be a ranked list of source files.
 
 As it is true for most IR applications, it is necessary to index the source code in order to enable efficient 
-search over it. For this, some preprocessing must be applied to the source files:
+search over it. An \emph{inverted index} is normally used for this purpose. This kind of index is similar to a hash table, mapping
+a term to a list of documents where it appears. In our case, we consider every \texttt{.java} file a \emph{document} for retrieval.
+
+In order to obtain a useful representation of the corpus, some preprocessing must be applied to the source files before building
+the index:
 
 \begin{enumerate}
-	\item First, the correct versions for the software project under study must be selected. The gold set will be
-	collected for one or more versions of the source code. Since it only makes sense to look for a bug in the version
-	in which it was reported, these different versions must be identified and used separately.
+	\item First, the correct versions for the software project under study must be selected. Since it only makes sense to look
+	for a bug in the version in which it was reported, we picked a particular version for each software system under study and
+	collected fixed bug reports for only that version to use as a gold set. The source code corresponding to that version was
+	later downloaded and indexed as explained in the following steps.
 	
 	\item Since the chosen granularity chosen for this application is file-level, the following step is iterating through
 	the project source files and applying the next steps.
 	
-	\item Extract comments, literal strings and identifiers from each file. A parser for the particular programming
-	language is not mandatory but will help identify these elements unambiguously. It is necessary to ignore reserved 
-	words of the language and programming tokens such as \texttt{\{} since these don't contain any semantic information
-	that would boost search performance.
+	\item Extract comments, literal strings and identifiers from each file, ignoring package declarations and import statements.
+	Eclipse JDT\footnote{https://eclipse.org/jdt/core/} was used to parse the source files and extract these elements. It is
+	necessary to ignore reserved words of the language and programming tokens such as `\texttt{\{}' since these don't contain any
+	semantic information that would boost search performance.
 	
 	\item Apply identifier splitting. This process consists in recognizing composite identifiers such as 
 	\texttt{threadExecutor} and splitting them into their constituent words, in this case \texttt{thread} and 
@@ -197,14 +203,14 @@ search over it. For this, some preprocessing must be applied to the source files
 	has been shown to increase performance \cite{saha2013}. The Porter stemmer is a popular choice for this process 
 	\cite{porter1980}.
 	
-	\item An IR tool such as Lucene\footnote{https://lucene.apache.org/} is then used to store the processed representation
+	\item Apache Lucene\footnote{https://lucene.apache.org/} was then used to store the processed representation
 	of each source file to allow efficient search over the whole corpus.
 \end{enumerate}
 
 Once the index is formed the next step is building a query processor. In our case, the queries are bug reports posted 
 on a bug-tracking system, and they normally consist of title and description. The same process outlined above, excluding 
-the first three steps, is applied to both fields and an information retrieval system such as Lucene is used to rank the 
-documents in order of descending relevance. Using a certain weighting scheme that will be explained in the next section.
+the first three steps, is applied to both fields and the information retrieval system Apache Lucene is used to rank the 
+documents in order of descending relevance. Using a certain weighting scheme that will be explained in the next sections.
 
 Relevance calculation is the step that will really determine the effectiveness of our implementation. Three different
 values will be used for this process: textual similarity, file length and similar bugs. The way these values are computed
@@ -215,7 +221,10 @@ In the Vector Space Model, a source file is represented as a vector in which eac
 the corpus, and
 its value is the amount of times that term appears in the document. For example, if we have a corpus consisting of the
 terms $\{\text{black}, \text{funny}, \text{sheep}, \text{cat}\}$ and a document $d=\{\text{black}, \text{cat}, \text{funny},
-\text{cat}\}$, the vector representation for this document will be $V_d = (1, 1, 0, 2)$. When comparing two vector
+\text{cat}\}$, the vector representation for this document will be $V_d = (1, 1, 0, 2)$. Using this model, both the query and all
+documents in the corpus can be represented as points in a space. The score of a document will be its similarity with the query.
+
+When calculating the similarity of two vector
 representations, in our case those referring to a bug report and a source file, simply calculating the distance
 between the two points might not be the best approach \cite{manning2008}. Cosine similarity is
 widely used in the IR field, and it consists on calculating the angle between the two vectors. This helps reduce the
@@ -227,9 +236,10 @@ bias towards longer documents, which is a big problem when using only euclidean 
 \end{equation}
 
 In this equation, $q$ and $d$ are respectively a query and a document, and $\vec{V_q}$, $\vec{V_d}$ are their respective
-vector representations.
+vector representations. This na\"ive approach, however, does not consider that some terms in the corpus may have a higher
+discriminating power than others.
 
-A weighting scheme known as \textit{tf-idf} can be used to rank the results of a query. The rationale behind this method is
+A weighting scheme known as \textit{tf-idf} can be used to overcome this weakness. The rationale behind this method is
 that not all terms in a corpus will have the same discriminating power. For instance, if a term is present in only one
 document in the corpus, it could be assumed that it is a very specific term, and if it appears in a query, it is very
 likely that the only document containing it will be relevant. On the other hand, if a term appears in every document in
@@ -245,7 +255,7 @@ These values are calculated as follows:
 
 \begin{equation}
 	\text{idf}(t, d) = \log \left( \frac{|D|}{n_t} \right) 
-\end{equation}x
+\end{equation}
 
 Where $t$ represents a term, $d$ is a document, $f_{\text{td}}$ is the amount of times term $t$ appears in document $d$,
 $|D|$ is the amount of documents in the corpus, and $n_t$ is the amount of documents in the corpus that contain term $t$.
@@ -256,37 +266,85 @@ The logarithms help dampen the effect of differences in document length even fur
 	\text{tf-idf}(t, d) = \text{tf}(t, d) \times \text{idf}(t, d)
 \end{equation}
 
+Applying this idea to equation \ref{similarity} we obtain the equation used to rank documents by their similarity with the query:
+
+\begin{equation}
+	\text{VSMScore}(q, d) = \frac{\sum_{t \in q \cap d}(\text{tf-idf}(t,d)\times \text{tf-idf}(t,q))}{|q||d|}
+	\label{VSMSim}
+\end{equation}
+
+Where $|q|$ and $|d|$ are the tf-idf norms of the query and document respectively, defined as:
+
+\begin{equation*}
+	|d| = \sqrt{\sum_{t \in d}(\text{tf-idf}(t, d))^2}
+\end{equation*}
+
+Equation \ref{VSMSim} is simply equation \ref{similarity} with the vector components altered to reflect the assumption that some
+terms are more important than others
+
 \subsection{File length}
-As stated before, the size of the file does contribute to the probability of it containing the bug. In the case of having two files with the similar scores, the length of the file will be used in order to resolve conflicts.   
+As stated before, the size of the file is an indicator of the probability of it containing the bug. A factor of the file length
+will be used as part of the score for ranking.  
 To include file length in the ranking calculation, the following equation is defined:
 
 \begin{equation}
-	g(d)= \frac{1}{1 + e ^ {-N(|d|)}}
+	\text{LengthFactor}(d)= 
+	\begin{cases} 
+      \hfill \frac{e ^ {N(|d|)}}{1 + e ^ {N(|d|)}}    \hfill & \text{ if $x_\text{low} \leq |d| \leq x_\text{high}$} \\
+      \hfill 0.5 \hfill & \text{ if $|d| < x_\text{low}$} \\
+      \hfill 1 \hfill & \text{ if $|d| > x_\text{high}$} \\
+  	\end{cases}	
 \end{equation}
 
-Where $|d|$ is the number of terms in the document. This function assigns higher scores to longer files. The value of $n$
+Where $|d|$ is the number of terms in the document, counting repetition. The values of $x_\text{low}$ and $x_\text{high}$
+Are calculated using some statistics. With $X$ being the set of all $|d|$ for every document in the corpus,
+$x_\text{low} = \mu_X - 3\sigma_X$ and $x_\text{high}=\mu_X + 3\sigma_X$, where $\mu_X$ is the average document length and
+$\sigma_X$ is the standard deviation of these values. This function assigns higher scores to longer files. The value of $|d|$
 is normalized using the following function:
 
 \begin{equation}
-	N(x) = \frac{x - x_\text{min}}{x_\text{max} - x_\text{min}}
+	N(x) = 6 \times \frac{x - x_\text{min}}{x_\text{high} - x_\text{min}}
 \end{equation}
 
-In which $x_\text{min}$ and $x_\text{max}$ are the lengths of the shortest and longest documents in the corpus,
-respectively.
+In which $x_\text{min}=\max\{0, x_\text{low}\}$.
 
 \subsection{Similar bugs}
-Similar bugs will also be taken into account in order to improve the ranking system. This follows the idea that bugs that produce the same or similar erroneous behavior tend to be located in the same files. 
-The results will also be augmented with information from previously fixed bug reports. For this, we consider a bug
-$B$ as a query, then we collect a set $P$ of previously fixed bugs and a set $F$ of the files fixed to address
+Similar bugs will also be taken into account in order to improve the ranking system. This follows the idea that bugs that produce
+the same or similar erroneous behavior tend to be located in the same files. For this, we consider a bug
+$b$ as a query, then we collect a set $P$ of previously fixed bugs and a set $F$ of the files fixed to address
 these bugs. The documents in $P$ are all of those that have a non-zero similarity value with the current bug being
-considered, calculated using equation \ref{similarity}. For every document $f$ in $F$ we calculate:
+considered, calculated using equation \ref{similarity}, i.e. they have at least one term in common with $b$.
+For every document $d$ in $F$ we calculate:
 
 \begin{equation}
-	\text{SScore} = \sum_{P_i \in R(f)} \frac{S(B, P_i)}{n_i}
+	\text{SimiScore}(d) = \sum_{p_i \in R(d)} \frac{S(b, p_i)}{n_i}
 \end{equation}
 
-Where $S$ is the similarity score defined in equation \ref{similarity}, $R(f)$ is the set of bug reports that include
-$f$ in their fix set and $n_i$ is the amount of files in the fix set of $P_i$.
+Where $S$ is the similarity score defined in equation \ref{similarity}, $R(d)$ is the set of bug reports that include
+$d$ in their fix set and $n_i$ is the amount of files in the fix set of $p_i$.
+
+\subsection{Final Score}
+These three scores will be combined into a single \emph{BugLocatorScore} which will ultimately be used to rank source code files
+according to a bug report $q$ used as query. For this we define an \emph{rVSM} score as:
+
+\begin{equation*}
+	\text{rVSMScore}(q, d) = \text{LengthFactor}(d) \times \text{VSMScore}(q, d)
+\end{equation*}
+
+The final score for a document is calculated as follows:
+
+\begin{multline*}
+	\text{BugLocatorScore}(q,d) = (1- \alpha) \times M(rVSMScore(q,d)) \\+ \alpha \times M(SimiScore(d))
+\end{multline*}
+
+Where $\alpha$ is a factor that can be used to tune the performance. The authors report it works better with a value around $0.3$,
+which is confirmed by our evaluation. The function $M$ is used to normalize the scores, and is defined as:
+
+\begin{equation*}
+	M(s) = \frac{s-s_\text{min}}{s_\text{max}-s_\text{min}}
+\end{equation*}
+
+Where $s_\text{min}$ and $s_\text{max}$ are the minimum and maximum scores respectively.
 
 \section{Experimental Design}
 After the IR approach is implemented, it will be empirically tested on some open source software projects. 
@@ -357,7 +415,7 @@ Several challenges arose during the development of the project. The Implementati
 Other challenges include the manual extraction of bugs reports from issue tracking system. While this process could be automated to read the content of issue tracking websites, we found that there is not an standardized form of submitting and reporting bugs. While some programs had very well organized reports with the patches attached stating the specific location of the bug, other contained no fix for the bug or repeated bug reports with the solution stated on the comments.
 
 \section{Future Work}
-There is a need to improve several aspects of the project in order to improve its effectiveness. One aspect that is important to mention is increasing the granularity of the tool. We are currently implementing granularity at the source code level. By refining the granularity to a method level, our framework will be able to present programmers a smaller piece of code and hence ease the effort when trying to locate and fix a bug. Another aspect that could be improved is the automation of bug extraction from issue tracking systems. This could potencially enhance the process for fixing bugs by presenting users with possible locations at the method level as soon as users enter bug reports.   
+There is a need to improve several aspects of the project in order to improve its effectiveness. One aspect that is important to mention is increasing the granularity of the tool. We are currently implementing granularity at the source code level. By refining the granularity to a method level, our framework will be able to present programmers a smaller piece of code and hence ease the effort when trying to locate and fix a bug. Another aspect that could be improved is the automation of bug extraction from issue tracking systems. This could potencially enhance the process for fixing bugs by presenting users with possible locations at the method level as soon as users enter bug reports. 
 
 \section{Conclusion}
 With our implementation, we aim at developing a tool for bug localization at the file level that takes bug reports
