@@ -48,4 +48,9 @@ public class BugLocatorEvaluator extends BaseRetrievalEvaluator {
                 collectionExtrema[0],
                 collectionExtrema[1]);
     }
+
+    @Override
+    protected String getLogTag() {
+        return "BugLocator";
+    }
 }

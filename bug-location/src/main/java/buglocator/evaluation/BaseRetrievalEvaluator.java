@@ -70,11 +70,25 @@ public abstract class BaseRetrievalEvaluator {
         float precisionAccum = 0;
         float recallAccum = 0;
 
-        for (String jsonLine : FileUtils.readLines(Paths.get(dataPath.toString(),
-                "processed-bug-reports", systemName + ".json").toFile())) {
+        System.out.println(
+                String.format("Beginning %s evaluation of system %s\n", getLogTag(), systemName));
+
+        List<String> lines = FileUtils.readLines(Paths.get(dataPath.toString(),
+                "processed-bug-reports", systemName + ".json").toFile());
+        int lineCount = lines.size();
+        int notificationInterval = lineCount / 10;
+
+        for (int i = 0; i < lines.size(); i++) {
+            String jsonLine = lines.get(i);
             BugReport bugReport = gson.fromJson(jsonLine, BugReport.class);
 
-            ScoreDoc[] scoredFiles = retriever.locate(bugReport);
+            if (i % notificationInterval == 0) {
+                System.out.println(
+                        String.format("[%s - %s] Processing bug report %d of %d",
+                                systemName, getLogTag(), i + 1, lineCount));
+            }
+
+            ScoreDoc[] scoredFiles = retriever.locate(bugReport, 10);
             // If the bug report doesn't have the required information it will return null
             if (scoredFiles == null) {
                 continue;
@@ -87,7 +101,7 @@ public abstract class BaseRetrievalEvaluator {
                         try {
                             return getSourceFileID(f);
                         } catch (IOException e) {
-                            System.out.println("Index read error at gold set collection");
+                            System.err.println("Index read error at gold set collection");
                         }
                         return null;
                     }).collect(Collectors.toSet());
@@ -133,8 +147,12 @@ public abstract class BaseRetrievalEvaluator {
                     averagePrecision,
                     averageRecall);
         } else {
-            System.out.println("No valid queries for system " + systemName);
+            System.err.println("No valid queries for system " + systemName);
         }
+
+        System.out.println(
+                String.format("\nFinished %s evaluation for system %s\n", getLogTag(), systemName));
+        System.out.println("--------\n");
 
         return result;
     }
@@ -203,4 +221,6 @@ public abstract class BaseRetrievalEvaluator {
      * @throws IOException
      */
     protected abstract RetrieverBase setupRetriever() throws IOException;
+
+    protected abstract String getLogTag();
 }

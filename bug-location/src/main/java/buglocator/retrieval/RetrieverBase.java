@@ -47,7 +47,7 @@ public abstract class RetrieverBase {
      * @return An ordered list of ranked source files.
      * @throws IOException when an index read fails.
      */
-    public abstract ScoreDoc[] locate(BugReport bugReport) throws IOException;
+    public abstract ScoreDoc[] locate(BugReport bugReport, int maxResults) throws IOException;
 
     protected String getQueryString(BugReport bugReport) {
         String queryString;

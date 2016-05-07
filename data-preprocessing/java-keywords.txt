@@ -48,3 +48,6 @@ float
 native
 super
 while
+null
+true
+false

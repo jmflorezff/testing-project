@@ -2,6 +2,7 @@ package buglocator.indexing.source.code;
 
 import buglocator.indexing.BaseIndexBuilder;
 import buglocator.indexing.data.SourceFileText;
+import org.apache.commons.io.FileUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -9,7 +10,8 @@ import org.apache.lucene.index.IndexWriterConfig;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Builds a Lucene index for a corpus of source code file texts. Should not be reused.
@@ -17,8 +19,7 @@ import java.util.Arrays;
 public class SourceCodeIndexBuilder extends BaseIndexBuilder<SourceFileText> {
     private StatCollectingSimilarity similarity = new StatCollectingSimilarity();
     private boolean used = false;
-    private int minDocumentLength = Integer.MAX_VALUE;
-    private int maxDocumentLength = Integer.MIN_VALUE;
+    private List<Integer> documentLengths = new ArrayList<>();
 
     public SourceCodeIndexBuilder() {
         super(SourceFileText.class);
@@ -32,6 +33,20 @@ public class SourceCodeIndexBuilder extends BaseIndexBuilder<SourceFileText> {
 
         super.buildIndex(sourceFilePath, indexPath);
         used = true;
+
+        float averageLength = documentLengths.stream()
+                .reduce((i, j) -> i + j).get() / documentLengths.size();
+        float stdDev = (float) Math.sqrt(documentLengths.stream()
+                .map(len -> Math.pow(len - averageLength, 2))
+                .reduce((x, y) -> x + y)
+                .get() / documentLengths.size());
+
+        int minus3Sigma = (int) (averageLength - (3 * stdDev));
+        int plus3Sigma = (int) (averageLength + (3 * stdDev));
+
+        // Write maximum and minimum to a file in the index directory
+        FileUtils.write(indexPath.resolve("stats.txt").toFile(),
+                minus3Sigma + "\n" + plus3Sigma);
     }
 
     @Override
@@ -42,8 +57,7 @@ public class SourceCodeIndexBuilder extends BaseIndexBuilder<SourceFileText> {
         document.add(new Field("text", item.getText(), termVectorsFieldType));
 
         int wordCount = countSpaces(item.getText()) + 1;
-        minDocumentLength = Math.min(minDocumentLength, wordCount);
-        maxDocumentLength = Math.max(maxDocumentLength, wordCount);
+        documentLengths.add(wordCount);
 
         return document;
     }
@@ -65,23 +79,5 @@ public class SourceCodeIndexBuilder extends BaseIndexBuilder<SourceFileText> {
         }
 
         return count;
-    }
-
-    public int getMaxDocumentLength() {
-        if (!used) {
-            throw new IllegalStateException("Can't get collection stats without indexing a corpus" +
-                    "first");
-        }
-
-        return maxDocumentLength;
-    }
-
-    public int getMinDocumentLength() {
-        if (!used) {
-            throw new IllegalStateException("Can't get collection stats without indexing a corpus" +
-                    "first");
-        }
-
-        return minDocumentLength;
     }
 }
