@@ -353,6 +353,13 @@ source projects: BookKeeper, Derby, Lucene, Mahout, OpenJPA, Pig, Solr, Tika and
 by The Apache Software Foundation\footnote{http://www.apache.org/}. Some of the projects have only a few data
 points, so we intend to add more, attempting to have a comparable amount of bug reports for each system.
 
+\begin{figure}
+	\centering
+\includegraphics[scale=.5]{data}
+	\caption{List of projects}
+\end{figure}
+
+
 The implemented IR approach will be tested by performing search over the indexed source code using each query 
 (bug report) differentiating between the results obtained using only the title of the bug report as a query, using 
 only the description and using both. The results will be evaluated using the following IR metrics
@@ -381,9 +388,7 @@ only the description and using both. The results will be evaluated using the fol
 	documents in the corpus and $pos(k)$ is $1$ if the document at position $k$ is relevant and $0$ otherwise.
 \end{itemize}
 
-\section{Experimental Results}
-\includegraphics[scale=.5]{ranking}
-\subsection{Experimental Data}
+
 
 \begin{figure}
 \includegraphics[scale=.38]{json}
@@ -394,11 +399,42 @@ only the description and using both. The results will be evaluated using the fol
 
 
 \begin{figure}
+ \centering
 \includegraphics[scale=.38]{jsonSource}
 	\caption{Processed source code files }
 \end{figure}
  
+
+
+
+
 \subsection{Evaluation and Experiments}
+
+\begin{figure}
+ \centering
+\includegraphics[scale=.38]{top1}
+	\caption{Processed source code files }
+\end{figure}
+
+ 
+ \begin{figure}
+ \centering
+\includegraphics[scale=.38]{Top5}
+	\caption{Processed source code files }
+\end{figure}
+ 
+ \begin{figure}
+ \centering
+\includegraphics[scale=.38]{Top10}
+	\caption{Processed source code files }
+\end{figure}
+ 
+ \begin{figure}
+\includegraphics[scale=.38]{overall}
+	\caption{Processed source code files }
+\end{figure}
+ 
+
 
 \subsection{Comparison Against Lucene}
 \subsection{Limitations}
