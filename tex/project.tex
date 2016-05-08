@@ -347,12 +347,13 @@ which is confirmed by our evaluation. The function $M$ is used to normalize the 
 Where $s_\text{min}$ and $s_\text{max}$ are the minimum and maximum scores respectively.
 
 \section{Experimental Design}
-After the IR approach is implemented, it will be empirically tested on some open source software projects. 
-A starting gold set has been acquired. It contains 424 bug reports in total, extracted manually from 9 open
+After the implementation was complete, it was empirically tested on some open source software projects. 
+A gold set has been acquired. It contains 673 bug reports in total, extracted manually from the bug-tracking systems of 9 open
 source projects: BookKeeper, Derby, Lucene, Mahout, OpenJPA, Pig, Solr, Tika and Zookeeper, all of them developed
-by The Apache Software Foundation\footnote{http://www.apache.org/}. Some of the projects have only a few data
-points, so we intend to add more, attempting to have a comparable amount of bug reports for each system.
+by The Apache Software Foundation\footnote{http://www.apache.org/}. The JIRA API was used to download the data for these bug
+reports.
 
+<<<<<<< HEAD
 \begin{figure}
 	\centering
 \includegraphics[scale=.5]{data}
@@ -364,31 +365,60 @@ The implemented IR approach will be tested by performing search over the indexed
 (bug report) differentiating between the results obtained using only the title of the bug report as a query, using 
 only the description and using both. The results will be evaluated using the following IR metrics
 \cite{saha2013, manning2008}:
+=======
+The empirical evaluation was carried out by performing search over the indexed source code using each query 
+(bug report) and comparing the results obtained with the set of files actually known to have been fixed to address the bug.
+The results were evaluated using the following IR metrics \cite{saha2013, manning2008}:
+>>>>>>> 8809d753aaf31e678aea3e18bae6036a9db9ea3c
 
 \begin{itemize}
-	\item Precision, which is the ratio of relevant documents retrieved out of the total amount of documents
-	retrieved for a query.
+	\item Precision, which is the ratio of relevant documents retrieved to the total amount of documents
+	retrieved for a query. We calculate the average of this value over all queries for a system and report it as \emph{Average
+	Precision}.
 	
 	\item Recall, which refers to the ratio of relevant documents retrieved to the total number of relevant
-	documents in the corpus for a query.
+	documents in the corpus for a query. The average for every query for a system is the \emph{Average Recall}.
 	
 	\item Top $N$ Rank is the amount of bugs for which at least one of their relevant documents can be found
 	within the top $N$ results where $N=1,5,10$. We will consider the bug located if at least one file from the
 	relevant set of each query is present in the results.
 	
 	\item Reciprocal Rank is the multiplicative inverse of the rank of the first relevant document in a result
-	set for a particular query. Evidently, it is desirable for this value to be close to $1$.
+	set for a particular query. Evidently, it is desirable for this value to be close to $1$. We report the average of this value
+	over all queries for a system as \emph{Mean Reciprocal Rank} (MRR).
 	
 	\item Average Precision is used to get an overview of the performance of the system for a result list when
 	the query has multiple relevant documents. It is calculated with the following function:
+	
 	\begin{equation}
 		\text{AvgP} = \frac{\sum_{k=1}^{n} (P(k) \times pos(k))}{r}
 	\end{equation}
+	
 	Where $n$ is the amount of documents retrieved, $P(k)$ is the precision at rank $k$, $r$ is the amount of relevant
-	documents in the corpus and $pos(k)$ is $1$ if the document at position $k$ is relevant and $0$ otherwise.
+	documents in the corpus and $pos(k)$ is $1$ if the document at position $k$ is relevant and $0$ otherwise. We report the
+	average over all queries for a system as \emph{Mean Average Precision} (MAP).
 \end{itemize}
 
+<<<<<<< HEAD
 
+=======
+Since we are reimplementing a tool, we use the same data the authors used for their empirical evaluation as well. The bug report
+data was provided as a replication package by the authors, while the source code was acquired by our team for this project. The
+systems used in the original test were Eclipse 3.1, SWT 3.1 and AspectJ 1.5.1. The source code for ZXing could not be found
+because the version used by the original authors is very old.
+
+\section{Experimental Results}
+
+We were able to replicate the results reported by the authors in 2 out of 3 systems. The results for the Eclipse system were
+poorer than the ones the authors report. This could be because of differences in preprocessing algorithms between our team and
+the authors. Since this system's codebase is so big, little differences in preprocessing could get exacerbated and cause big
+differences in overall performance.
+
+Nevertheless, the results obtained in our own empirical study are encouraging, with results comparable to those obtained in the
+original study.
+\includegraphics[scale=.5]{ranking}
+\subsection{Experimental Data}
+>>>>>>> 8809d753aaf31e678aea3e18bae6036a9db9ea3c
 
 \begin{figure}
 \includegraphics[scale=.38]{json}
@@ -410,6 +440,7 @@ only the description and using both. The results will be evaluated using the fol
 
 \subsection{Evaluation and Experiments}
 
+<<<<<<< HEAD
 \begin{figure}
  \centering
 \includegraphics[scale=.38]{top1}
@@ -437,10 +468,10 @@ only the description and using both. The results will be evaluated using the fol
 
 
 \subsection{Comparison Against Lucene}
+=======
+>>>>>>> 8809d753aaf31e678aea3e18bae6036a9db9ea3c
 \subsection{Limitations}
 \subsection{Performance}
-
-\section{Related Work}
 
 
 
@@ -451,14 +482,10 @@ Several challenges arose during the development of the project. The Implementati
 Other challenges include the manual extraction of bugs reports from issue tracking system. While this process could be automated to read the content of issue tracking websites, we found that there is not an standardized form of submitting and reporting bugs. While some programs had very well organized reports with the patches attached stating the specific location of the bug, other contained no fix for the bug or repeated bug reports with the solution stated on the comments.
 
 \section{Future Work}
-There is a need to improve several aspects of the project in order to improve its effectiveness. One aspect that is important to mention is increasing the granularity of the tool. We are currently implementing granularity at the source code level. By refining the granularity to a method level, our framework will be able to present programmers a smaller piece of code and hence ease the effort when trying to locate and fix a bug. Another aspect that could be improved is the automation of bug extraction from issue tracking systems. This could potencially enhance the process for fixing bugs by presenting users with possible locations at the method level as soon as users enter bug reports. 
+There is a need to improve several aspects of the project in order to improve its effectiveness. One aspect that is important to mention is increasing the granularity of the tool. We are currently implementing granularity at the source file level. By refining the granularity to a method level, our framework will be able to present programmers a smaller piece of code and hence ease the effort when trying to locate and fix a bug. Another aspect that could be improved is the automation of bug extraction from issue tracking systems. This could potentially enhance the process for fixing bugs by presenting users with possible locations at the method level as soon as users enter bug reports. 
 
 \section{Conclusion}
-With our implementation, we aim at developing a tool for bug localization at the file level that takes bug reports
-as input. This implementation uses a similar technique used in already known tools such as BugLocator. We will
-also test the effectiveness of our tool on a gold set constructed from open source projects. With these results,
-a comprehensive analysis of the strengths and weaknesses of the approach will be carried out, which will allow
-us to propose candidates for future work.
+
 
 \bibliographystyle{abbrv}
 \bibliography{project}
