@@ -124,8 +124,8 @@ Most IR-based bug localization techniques use bug reports as queries. Some of th
 improve ranking performance, such as stack traces or dynamic data. % Ref?
 
 % Explain VSM and why.
-\section{Bug Reports extraction}
-\subsection{Linking fixes in version history to issues in bug-tracking systems}
+\section{Bug Reports Extraction}
+\subsection{Linking Fixes in Version History to Issues in Bug Tracking Systems}
 IR approaches normally have to be empirically tested in order to assess their performance. This process is 
 normally carried out using special corpora for which some queries have been manually audited and all 
 (or a good part) of the relevant results for each one are known \cite{harman2011}. The reason for this is to correctly assest the effectiveness of the IR system. It will be very complex and time-consuming to test the system when the results are not known because it would be hard to identify if each ranked filed contain a bug or not.
@@ -156,7 +156,7 @@ potentially any number included in a commit message for other reasons could be i
 if it exists in the bug-tracking system by chance. Additionally, not all fixed bugs get marked as such in these
 systems, and some of them get fixed without explicitly being assigned to a developer.
 
-\subsection{Bugs in issue tracking systems}
+\subsection{Bugs in Issue Tracking Systems}
 A total of 673 bug reports were extracted for this project. Since building a good set of bug reports is very important and there are several challenges in automating bug extraction including variances between projects, the bug reports were extracted and inspected manually. We follow a criteria in which we only accounted for bug reports that were resolved and ignore improvements, added features and unresolved bugs. The following figure depicts the process manually followed in order to obatain the bug reports from the issue tracking system.
 
 \begin{figure}[h]
@@ -314,7 +314,7 @@ Where $|q|$ and $|d|$ are the tf-idf norms of the query and document respectivel
 Equation \ref{VSMSim} is simply equation \ref{similarity} with the vector components altered to reflect the assumption that some
 terms are more important than others
 
-\subsection{File length}
+\subsection{File Length}
 As stated before, the size of the file is an indicator of the probability of it containing the bug. A factor of the file length
 will be used as part of the score for ranking.  
 To include file length in the ranking calculation, the following equation is defined:
@@ -340,7 +340,7 @@ is normalized using the following function:
 
 In which $x_\text{min}=\max\{0, x_\text{low}\}$.
 
-\subsection{Similar bugs}
+\subsection{Similar Bugs}
 Similar bugs will also be taken into account in order to improve the ranking system. This follows the idea that bugs that produce
 the same or similar erroneous behavior tend to be located in the same files. For this, we consider a bug
 $b$ as a query, then we collect a set $P$ of previously fixed bugs and a set $F$ of the files fixed to address
@@ -452,7 +452,7 @@ original study.
 
 %>>>>>>> 8809d753aaf31e678aea3e18bae6036a9db9ea3c
 
-\subsection{Evaluation and Experiments}
+\subsection{Evaluation}
 Our implementation results were able to replicate the results shown on the original study and demonstrate clear improvements when compared against the base line in several different categories. For all 12 programs, our implementation showed a higher percentage on the top 1 category against the baseline. That indicates that the highest ranked file was indeed the file that contained the bug. Our implementation almost double the baseline in some instances for the top 1 category. The detailed results can be observed on figure 5. Other metrics that were also taken into account were the top 5 and top 10 categories in which we calculated the accuracy of our tool in identifying the correct source code file in the top 5 and top 10 ranked results. As we can observed on figure 6 and 7, our implementation is able to identify the correct source code files with more accuracy than the baseline. 
 
 
