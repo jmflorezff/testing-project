@@ -465,11 +465,20 @@ and related bug reports does have a positive effect in identifying buggy files.
 \section{Experimental Results}
 We were able to replicate the results reported by the authors in 2 out of 3 systems. The results for the Eclipse system were
 poorer than the ones the authors report. This could be because of differences in preprocessing algorithms between our team and
-the author's algorithms. Since this system's codebase is so big, little differences in preprocessing could get exacerbated and cause big
-differences in overall performance.
+the author's algorithms. Since this system's codebase is so big, little differences in preprocessing could get exacerbated and
+cause big differences in overall performance. Additionally, we cannot be sure to have used the exact same versions of the source
+code as the authors, since these were not provided in the replication package.
 
 Nevertheless, the results obtained in our own empirical study are encouraging, with results comparable to those obtained in the
-original study.
+original study for all the metrics considered. Figure \ref{comparison} shows the comparison between our results and those reported
+by the authors in their paper.
+
+\begin{figure*}[h]
+ 	\centering
+ 	\includegraphics[scale=.55]{comparison.png}
+ 	\caption{Comparison Between Buglocator and BuglocatorII}
+ 	\label{comparison}
+\end{figure*}
 
 \subsection{Evaluation}
 Our implementation results were able to replicate the results shown on the original study and demonstrate clear improvements when
