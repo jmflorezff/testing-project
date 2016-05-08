@@ -383,14 +383,10 @@ After the implementation was complete, it was empirically tested on some open so
 A gold set has been acquired. It contains 673 bug reports in total, extracted manually from the bug-tracking systems of 9 open
 source projects: BookKeeper, Derby, Lucene, Mahout, OpenJPA, Pig, Solr, Tika and Zookeeper, all of them developed
 by The Apache Software Foundation\footnote{http://www.apache.org/}. The JIRA API was used to download the data for these bug
-reports. Figure 4 summarizes all the projects used with its respective version numbers and the amount of queries that were executed for for each project. 
+reports.  
 
 %<<<<<<< HEAD
-\begin{figure}[h]
-	\centering
-\includegraphics[scale=.5]{data}
-	\caption{List of projects}
-\end{figure}
+
 
 
 The implemented IR approach will be tested by performing search over the indexed source code using each query 
@@ -435,12 +431,19 @@ Where $n$ is the amount of documents retrieved, $P(k)$ is the precision at rank 
 Since we are re-implementing a tool, we use the same data the authors used for their empirical evaluation as well. The bug report
 data was provided as a replication package by the authors, while the source code was acquired by our team for this project. The
 systems used in the original test were Eclipse 3.1, SWT 3.1 and AspectJ 1.5.1. The source code for ZXing could not be found
-because the version used by the original authors is very old.
+because the version used by the original authors is very old. Figure 4 summarizes all the projects used with its respective version numbers and the amount of queries that were executed for for each project.
+
+\begin{figure}[h]
+	\centering
+\includegraphics[scale=.6]{data}
+	\caption{List of projects}
+\end{figure}
+
 
 \section{Experimental Results}
 we were able to replicate the results reported by the authors in 2 out of 3 systems. The results for the Eclipse system were
 poorer than the ones the authors report. This could be because of differences in preprocessing algorithms between our team and
-the authors. Since this system's codebase is so big, little differences in preprocessing could get exacerbated and cause big
+the author's algorithms. Since this system's codebase is so big, little differences in preprocessing could get exacerbated and cause big
 differences in overall performance.
 
 Nevertheless, the results obtained in our own empirical study are encouraging, with results comparable to those obtained in the
@@ -449,48 +452,51 @@ original study.
 
 %>>>>>>> 8809d753aaf31e678aea3e18bae6036a9db9ea3c
 
-
-
-
-
-
 \subsection{Evaluation and Experiments}
+Our implementation results were able to replicate the results shown on the original study and demonstrate clear improvements when compared against the base line in several different categories. For all 12 programs, our implementation showed a higher percentage on the top 1 category against the baseline. That indicates that the highest ranked file was indeed the file that contained the bug. Our implementation almost double the baseline in some instances for the top 1 category. The detailed results can be observed on figure 5. Other metrics that were also taken into account were the top 5 and top 10 categories in which we calculated the accuracy of our tool in identifying the correct source code file in the top 5 and top 10 ranked results. As we can observed on figure 6 and 7, our implementation is able to identify the correct source code files with more accuracy than the baseline. 
+
+
+\begin{figure}[th]
+ \centering
+	\includegraphics[scale=.5]{top1}
+	\caption{Processed source code files }
+\end{figure}
+
+
+
 
 %<<<<<<< HEAD
+
+
+ 
+ \begin{figure}[h]
+ \centering
+\includegraphics[scale=.5]{Top5}
+	\caption{Processed source code files }
+\end{figure}
+ 
+ \begin{figure}[h]
+ \centering
+\includegraphics[scale=.5]{Top10}
+	\caption{Processed source code files }
+\end{figure}
+
+Finally, we compare our implementation against the baseline the Mean Average Precision (MAP) and showed an improvement for all 12 projects. This information is shown on figure 8.  
+ 
+
 \begin{figure}[h]
  \centering
-\includegraphics[scale=.38]{top1}
-	\caption{Processed source code files }
+\includegraphics[scale=.4]{MPA.png}
+	\caption{Mean Average Precision }
 \end{figure}
 
- 
- \begin{figure}[h]
- \centering
-\includegraphics[scale=.38]{Top5}
-	\caption{Processed source code files }
-\end{figure}
- 
- \begin{figure}[h]
- \centering
-\includegraphics[scale=.38]{Top10}
-	\caption{Processed source code files }
-\end{figure}
- 
- \begin{figure}[h]
-\includegraphics[scale=.38]{overall}
-	\caption{Processed source code files }
-\end{figure}
- 
 
 
-\subsection{Comparison Against Lucene}
+
+
 %=======
 %>>>>>>> 8809d753aaf31e678aea3e18bae6036a9db9ea3c
 \subsection{Limitations}
-\subsection{Performance}
-
-
-
 
 
 \section{Challenges}
@@ -508,22 +514,7 @@ There is a need to improve several aspects of the project in order to improve it
 \balancecolumns
 
 
-\begin{table}[t][h]
-    \begin{tabular}{|l|l|l|l|l|l|l|l|l|l|}
-    \hline
-        System           &     Alpha &     Top 1   &     Top 5   &     Top 10  &     MRR     &     MAP     &     Avg.   Precision &     Avg.   Recall & Queries \\ \hline
-        bookkeeper-4.1.0 &     0.3   &     46.39\% &     78.35\% &     85.57\% &     58.49\% &     44.77\% &     44.77\%             &     97.71\%          &     97            \\ \hline
-        derby-10.9.1.0   &     0.3   &     18.52\% &     41.98\% &     53.09\% &     29.75\% &     24.10\% &     24.10\%             &     99.45\%          &     162           \\ \hline
-        lucene-4.0       &     0.3   &     34.85\% &     59.09\% &     74.24\% &     47.63\% &     37.01\% &     37.01\%             &     99.49\%          &     66            \\ \hline
-        mahout-0.8       &     0.3   &     13.33\% &     63.33\% &     80.00\% &     33.81\% &     26.05\% &     26.05\%             &     98.19\%          &     30            \\ \hline
-        openjpa-2.2.0    &     0.3   &     24.32\% &     37.84\% &     43.24\% &     31.11\% &     24.48\% &     24.48\%             &     100.00\%         & 37                \\ \hline
-        pig-0.11.1       &     0.3   &     28.57\% &     53.57\% &     69.64\% &     43.18\% &     33.02\% &     33.02\%             &     100.00\%         &     56            \\ \hline
-        solr-4.4.0       &     0.3   &     26.00\% &     56.00\% &     71.00\% &     40.40\% &     31.46\% &     31.46\%             &     98.20\%          &     100           \\ \hline
-        tika-1.3         &     0.3   &     27.91\% &     69.77\% &     69.77\% &     43.61\% &     38.00\% &     38.00\%             &     97.67\%          &     43            \\ \hline
-        zookeeper-3.4.5  &     0.3   &     43.90\% &     75.61\% &     91.46\% &     57.07\% &     44.62\% &     44.62\%             &     97.45\%          &     82            \\ \hline
-    \end{tabular}
-	\caption {IR Performance}
-\end{table}
+
 
 
 
