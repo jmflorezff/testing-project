@@ -22,7 +22,7 @@ Juan Manuel Florez Fandino, Raul Quinonez Tirado \\
 
 Faults or bugs are an inevitable part of software development. Bug reports are normally used to let developers know 
 there is an error in the code, but they rarely provide all the information necessary to determine where the bug must be 
-fixed at first glance. There is also no standardization or formal method of submitting bug reports. This hinders the performance of programmers, who will potentially have to revise large sections of code in order to locate the fault. This paper proposes a reimplementation of a tool for bug-report-based fault localization and an empirical study to assess its performance on a set of bug reports collected manually. We conclude with a comparison of this method with a baseline approach using standard Information Retrieval techniques.
+fixed at first glance. There is also no standardization or formal method of submitting bug reports. This hinders the performance of programmers, who will potentially have to revise large sections of code in order to locate the fault. This paper proposes a reimplementation of a tool for bug-report-based fault localization and an empirical study to assess its performance on a set of bug reports collected manually. We conclude with a comparison of this method with a baseline approach using standard Information Retrieval techniques and demonstrate improvement with the implementation of our tool.
 \end{abstract}
 
 %
@@ -71,43 +71,40 @@ fixed at first glance. There is also no standardization or formal method of subm
 %
 \printccsdesc
 
-\keywords{Bug localization; information retrieval; text processing; vector space model}
+\keywords{Bug localization; information retrieval; text processing; vector space model; corpora; gold set; }
 
 \section{Introduction}
 Due to the inherent complexity of software products, the occurrence of bugs is inevitable. Many different methods
 are used to prevent and repair faults in source code. However, on occasion these faults are not identified during
-testing, instead being uncovered by the final users. Bug reports are used by both open source communities and
+testing, instead being uncovered by the end users. Bug reports are used by both, open source communities and
 software development companies, and they allow users to communicate software failures to the development team.
 These reports are usually submitted by making use of a bug-tracking system.
-Once a bug report is received the usual process starts by assessing the severity of the bug and then assigning a
+Once a bug report is received, the usual process starts by assessing the severity of the bug and then assigning a
 developer or group of developers the task of locating and fixing the bug.
 
 However, locating bugs is usually not a straightforward process. Software systems that have the need of using
 bug-tracking systems are usually too complex for any one person to be able to identify the possible location
 of a bug at first
 glance. Manually searching through the source code files would be prohibitively time-consuming in addition to
-being error-prone. This is why many approaches for automated bug localization have been proposed. % REF?
+being error-prone. There is also not a widely used standard or good practices for submitting and correcting bugs on issue tracing systems. This leads to inconsistent bug reports as a programmer changes between different software projects. In order to address this issue, many approaches for automated bug localization have been proposed. % REF?
 
 Some of these approaches exploit the fact that source code is essentially text to allow search over code bases the
 same way search over natural-language texts would be carried out. Information retrieval (IR) is the discipline
-that studies search over corpora of unstructured data, and these approaches apply techniques born in this
-field of study to bug localization.
-One of the ways of locating software faults using IR is using a textual bug report and 
-a collection of source code files \cite{le2014}. The system then will output a ranked list of files where
-the bug is likely to be located. Developers will then look at the highest ranked locations for the bug first. 
+that studies search over a collection of written texts or corpora of unstructured data. The IR systems have many different applications and its techniques can be applied to solve a variety of challenges including bug localization. Using a textual bug report as input and a collection of source code files as a corpora is one of the ways that IR systems can help identify the location of software faults \cite{le2014}. The system then will output a ranked list of source code files where
+the bug is likely to be located. Developers will then look at the highest ranked locations for the bug first. This will ease the programmer's job by reducing the sample space of all the source code files. 
 Our goal for this project is to test a particular approach on a set of bug reports collected by our team.
 
 The source code and data for this project are hosted on GitHub\footnote{https://github.com/jmflorezff/testing-project}.
 
 \section{Problem}
-Reimplementing a bug-report-based bug localization technique and testing it empirically on data collected by our team. We call
-out implementation \emph{BugLocatorII}. The implementation will later be tested with data collected from open-source Java projects.
+Reimplementing a bug-report-based bug localization technique and testing it empirically on data collected by our team. The bug reports collected for this project were faults already identified and fixed in order to asst the effectiveness of our tool locating actual bugs. We call
+out implementation \emph{BugLocatorII}. The implementation will later be tested with data collected from open-source Java projects and then compare against unmodified IR techniques in order to see the advantages of our implementation  .
 
 \section{Background}
 
 \subsection{IR-Based Bug Localization}
 Information Retrieval (IR) can be defined as the process of finding material of an unstructured nature in a large 
-collection to satisfy a certain information need \cite{manning2008}. One widely known application of this discipline 
+collection to satisfy a certain information need \cite{manning2008}. This collection of data usually includes written texts but is not limited to it since it could also contain other media formats. One widely known application of this discipline 
 is internet search engines. These allow efficient search over millions of different web pages with the information need 
 being presented in the form of a natural-language \textit{query} by a user. IR usually operates on a \textit{corpus}, 
 i.e. a collection of documents which can be natural-language text such as books or news articles, but also 
@@ -127,11 +124,11 @@ Most IR-based bug localization techniques use bug reports as queries. Some of th
 improve ranking performance, such as stack traces or dynamic data. % Ref?
 
 % Explain VSM and why.
-
+\section{Bug Reports extraction}
 \subsection{Linking fixes in version history to issues in bug-tracking systems}
 IR approaches normally have to be empirically tested in order to assess their performance. This process is 
 normally carried out using special corpora for which some queries have been manually audited and all 
-(or a good part) of the relevant results for each one are known \cite{harman2011}. 
+(or a good part) of the relevant results for each one are known \cite{harman2011}. The reason for this is to correctly assest the effectiveness of the IR system. It will be very complex and time-consuming to test the system when the results are not known because it would be hard to identify if each ranked filed contain a bug or not.
 This also applies to the 
 field of automatic bug localization, in which we talk about a \textit{gold set}, i.e. a set of bug reports 
 connected to the related program elements that were modified to address each one, or \textit{fix set}.
@@ -159,6 +156,19 @@ potentially any number included in a commit message for other reasons could be i
 if it exists in the bug-tracking system by chance. Additionally, not all fixed bugs get marked as such in these
 systems, and some of them get fixed without explicitly being assigned to a developer.
 
+\subsection{Bugs in issue tracking systems}
+A total of 673 bug reports were extracted for this project. Since building a good set of bug reports is very important and there are several challenges in automating bug extraction including variances between projects, the bug reports were extracted and inspected manually. We follow a criteria in which we only accounted for bug reports that were resolved and ignore improvements, added features and unresolved bugs. The following figure depicts the process manually followed in order to obatain the bug reports from the issue tracking system.
+
+\begin{figure}[h]
+ \centering
+ \label{fig:bug}
+ \includegraphics[scale=.32]{bug.png}
+	\caption{Bug extraction}
+\end{figure}
+
+All of the bug reports were obtained from the JIRA issue tracking system. We first identify the correct version of the software and obtain the ID of the bug. Then, we check of the kind of report and the status of the report. Finally, the fix for the bug was identified in either a patch or a diff report and the bugs were saved on an spreadsheet for later extraction into an specific format read by \emph{BugLocatorII}.
+
+
 \section{Implementation}
 We propose the reimplementation for bug-localization tool known as BugLocator \cite{zhou2012}. This tool uses IR
 methods to locate bugs in a code base using bug reports as input. The tool also leverages document length and
@@ -166,6 +176,7 @@ previous recorded bug fixes to improve the results. The idea behind this is that
 to contain bugs than shorter files, and bug whose descriptions are similar to the one being addressed and have been fixed in the
 past are likely to be located in the same files. The technique uses file-level granularity, i.e. given %Ref
 a bug report, the result will be a ranked list of source files.
+
 
 As it is true for most IR applications, it is necessary to index the source code in order to enable efficient 
 search over it. An \emph{inverted index} is normally used for this purpose. This kind of index is similar to a hash table, mapping
@@ -216,13 +227,34 @@ Relevance calculation is the step that will really determine the effectiveness o
 values will be used for this process: textual similarity, file length and similar bugs. The way these values are computed
 is presented next.
 
+\subsection{Bug Report and Source Code Format}
+
+After the bug reports and the source code has been obtained, all the files were formatted into JavaScript Object Notation (JSON) in order to be used in our implementation. For bug reports, we included its description, ID and source files that had to be modified in order to fix the failure. For source code files, we included all the word on the source code file after removing all Java specific keywords. The following figures 2 and 3 depict the JSON format for both, bug reports and source code files, before they are input into our implementation.
+\begin{figure}[h]
+\includegraphics[scale=.38]{json}
+	\caption{Processed bug reports}
+\end{figure}
+
+
+
+
+\begin{figure}[h]
+ \centering
+\includegraphics[scale=.38]{jsonSource}
+	\caption{Processed source code files }
+\end{figure}
+ 
+
+
+
+
 \subsection{Textual Similarity}
 In the Vector Space Model, a source file is represented as a vector in which each dimension represents a term in
 the corpus, and
 its value is the amount of times that term appears in the document. For example, if we have a corpus consisting of the
 terms $\{\text{black}, \text{funny}, \text{sheep}, \text{cat}\}$ and a document $d=\{\text{black}, \text{cat}, \text{funny},
 \text{cat}\}$, the vector representation for this document will be $V_d = (1, 1, 0, 2)$. Using this model, both the query and all
-documents in the corpus can be represented as points in a space. The score of a document will be its similarity with the query.
+documents in the corpus can be represented as points in a space. The score of a document will be its similarity with the query. If two source files appear to be similar, the will be differentiated by the angle between the vectors, ranking higher a source file with a smaller angle to the query.
 
 When calculating the similarity of two vector
 representations, in our case those referring to a bug report and a source file, simply calculating the distance
@@ -351,10 +383,10 @@ After the implementation was complete, it was empirically tested on some open so
 A gold set has been acquired. It contains 673 bug reports in total, extracted manually from the bug-tracking systems of 9 open
 source projects: BookKeeper, Derby, Lucene, Mahout, OpenJPA, Pig, Solr, Tika and Zookeeper, all of them developed
 by The Apache Software Foundation\footnote{http://www.apache.org/}. The JIRA API was used to download the data for these bug
-reports.
+reports. Figure 4 summarizes all the projects used with its respective version numbers and the amount of queries that were executed for for each project. 
 
-<<<<<<< HEAD
-\begin{figure}
+%<<<<<<< HEAD
+\begin{figure}[h]
 	\centering
 \includegraphics[scale=.5]{data}
 	\caption{List of projects}
@@ -369,7 +401,7 @@ only the description and using both. The results will be evaluated using the fol
 The empirical evaluation was carried out by performing search over the indexed source code using each query 
 (bug report) and comparing the results obtained with the set of files actually known to have been fixed to address the bug.
 The results were evaluated using the following IR metrics \cite{saha2013, manning2008}:
->>>>>>> 8809d753aaf31e678aea3e18bae6036a9db9ea3c
+%>>>>>>> 8809d753aaf31e678aea3e18bae6036a9db9ea3c
 
 \begin{itemize}
 	\item Precision, which is the ratio of relevant documents retrieved to the total amount of documents
@@ -393,74 +425,58 @@ The results were evaluated using the following IR metrics \cite{saha2013, mannin
 	\begin{equation}
 		\text{AvgP} = \frac{\sum_{k=1}^{n} (P(k) \times pos(k))}{r}
 	\end{equation}
-	
-	Where $n$ is the amount of documents retrieved, $P(k)$ is the precision at rank $k$, $r$ is the amount of relevant
-	documents in the corpus and $pos(k)$ is $1$ if the document at position $k$ is relevant and $0$ otherwise. We report the
-	average over all queries for a system as \emph{Mean Average Precision} (MAP).
-\end{itemize}
+\end{itemize}	
+Where $n$ is the amount of documents retrieved, $P(k)$ is the precision at rank $k$, $r$ is the amount of relevant documents in the corpus and $pos(k)$ is $1$ if the document at position $k$ is relevant and $0$ otherwise. We report the average over all queries for a system as \emph{Mean Average Precision} (MAP).
 
-<<<<<<< HEAD
 
-=======
-Since we are reimplementing a tool, we use the same data the authors used for their empirical evaluation as well. The bug report
+%<<<<<<< HEAD
+
+%=======
+Since we are re-implementing a tool, we use the same data the authors used for their empirical evaluation as well. The bug report
 data was provided as a replication package by the authors, while the source code was acquired by our team for this project. The
 systems used in the original test were Eclipse 3.1, SWT 3.1 and AspectJ 1.5.1. The source code for ZXing could not be found
 because the version used by the original authors is very old.
 
 \section{Experimental Results}
-
-We were able to replicate the results reported by the authors in 2 out of 3 systems. The results for the Eclipse system were
+we were able to replicate the results reported by the authors in 2 out of 3 systems. The results for the Eclipse system were
 poorer than the ones the authors report. This could be because of differences in preprocessing algorithms between our team and
 the authors. Since this system's codebase is so big, little differences in preprocessing could get exacerbated and cause big
 differences in overall performance.
 
 Nevertheless, the results obtained in our own empirical study are encouraging, with results comparable to those obtained in the
 original study.
-\includegraphics[scale=.5]{ranking}
-\subsection{Experimental Data}
->>>>>>> 8809d753aaf31e678aea3e18bae6036a9db9ea3c
-
-\begin{figure}
-\includegraphics[scale=.38]{json}
-	\caption{Processed bug reports}
-\end{figure}
 
 
+%>>>>>>> 8809d753aaf31e678aea3e18bae6036a9db9ea3c
 
 
-\begin{figure}
- \centering
-\includegraphics[scale=.38]{jsonSource}
-	\caption{Processed source code files }
-\end{figure}
- 
 
 
 
 
 \subsection{Evaluation and Experiments}
 
-<<<<<<< HEAD
-\begin{figure}
+%<<<<<<< HEAD
+\begin{figure}[h]
  \centering
 \includegraphics[scale=.38]{top1}
 	\caption{Processed source code files }
 \end{figure}
 
  
- \begin{figure}
+ \begin{figure}[h]
  \centering
 \includegraphics[scale=.38]{Top5}
 	\caption{Processed source code files }
 \end{figure}
  
- \begin{figure}
+ \begin{figure}[h]
  \centering
 \includegraphics[scale=.38]{Top10}
 	\caption{Processed source code files }
 \end{figure}
  
- \begin{figure}
+ \begin{figure}[h]
 \includegraphics[scale=.38]{overall}
 	\caption{Processed source code files }
 \end{figure}
@@ -468,8 +484,8 @@ original study.
 
 
 \subsection{Comparison Against Lucene}
-=======
->>>>>>> 8809d753aaf31e678aea3e18bae6036a9db9ea3c
+%=======
+%>>>>>>> 8809d753aaf31e678aea3e18bae6036a9db9ea3c
 \subsection{Limitations}
 \subsection{Performance}
 
@@ -492,7 +508,7 @@ There is a need to improve several aspects of the project in order to improve it
 \balancecolumns
 
 
-\begin{table}[t]
+\begin{table}[t][h]
     \begin{tabular}{|l|l|l|l|l|l|l|l|l|l|}
     \hline
         System           &     Alpha &     Top 1   &     Top 5   &     Top 10  &     MRR     &     MAP     &     Avg.   Precision &     Avg.   Recall & Queries \\ \hline
@@ -508,6 +524,8 @@ There is a need to improve several aspects of the project in order to improve it
     \end{tabular}
 	\caption {IR Performance}
 \end{table}
+
+
 
 
 \end{document}
