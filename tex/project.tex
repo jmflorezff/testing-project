@@ -481,7 +481,7 @@ Our implementation results were able to replicate the results shown on the origi
 	\caption{Processed source code files }
 \end{figure}
 
-Finally, we compare our implementation against the baseline the Mean Average Precision (MAP) and showed an improvement for all 12 projects. This information is shown on figure 8.  
+Finally, we compare our implementation against the baseline the Mean Average Precision (MAP) and showed an improvement for all 12 projects. This information is shown on figure 8. All the detailed results of our implementation can be observed on figure 9 at the end of the document.  
  
 
 \begin{figure}[h]
@@ -497,6 +497,10 @@ Finally, we compare our implementation against the baseline the Mean Average Pre
 %=======
 %>>>>>>> 8809d753aaf31e678aea3e18bae6036a9db9ea3c
 \subsection{Limitations}
+While our implementation shows great results, there are several areas that need to be improved in order to make this tool more efficient and useful to developers. One limitation is that, currently, our implementation is limited to Java programs. This is can be easily addressed by making our tool recognize source code file extension and apply the language specific metrics such as key words to remove and language specific syntax. Another limitation is the manual bug extraction. While this process could be automated, there is a need for better practices while submitting bug reports in order to automate this process. Lastly, there is no guarantee that the erroneous file will be located at the top 1, 5 or 10 ranked files. This tool provides an educated guess stating the likelihood of finding the desired bug occurring on file. 
+
+
+
 
 
 \section{Challenges}
@@ -507,7 +511,14 @@ Other challenges include the manual extraction of bugs reports from issue tracki
 There is a need to improve several aspects of the project in order to improve its effectiveness. One aspect that is important to mention is increasing the granularity of the tool. We are currently implementing granularity at the source file level. By refining the granularity to a method level, our framework will be able to present programmers a smaller piece of code and hence ease the effort when trying to locate and fix a bug. Another aspect that could be improved is the automation of bug extraction from issue tracking systems. This could potentially enhance the process for fixing bugs by presenting users with possible locations at the method level as soon as users enter bug reports. 
 
 \section{Conclusion}
+Software systems nowadays are very complex and require the collaboration of several programmers. While a great amount of effort is given towards finding errors in software systems before they are released, it is practically impossible to find all bugs due to the complexity and large scale of projects. Several methods have been put in place in order to aid programmers in finding bugs such as issue tracking systems. However, this process is time consuming and it is hard to find the specific location of a bug. Our implementation showed how Information Retrieval systems can be used to automate bug localization. The results are very promising despite the work that can still be done in order to improve this approach. While this is not a final solution, it is definitely a step forward towards automating bug localization. 
 
+
+\begin{figure*}[h]
+	\centering
+	\includegraphics[scale=.55]{overall}
+	\caption{Overall Results}
+\end{figure*}
 
 \bibliographystyle{abbrv}
 \bibliography{project}
