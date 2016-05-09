@@ -1,28 +1,30 @@
-# testing-project
-For testing class
+BugLocatorII
+===
 
-CS6367 - Software Testing, Valitation, and Verification
 
-OS: Multiplatform
+Requirements
+---
 
-Compiler: javac 1.8
+Java Runtime Environment compatible with Java 8
 
-IDE: Intelli J IDEA CE
 
-Special instructions: 
+Execution instructions
+---
 
-1. Download Intelli J IDEA CE
+1. Open a command line interface and change working directory to the path where "BugLocatorII.zip" was extracted.
+2. Make sure the folder "data" and the subfolders "data/processed-bug-reports" and "data/processed-source-code" are present.
+3. Run the program using the following instruction:
 
-2. New-> Project -> From existing souce -> Bug-location (Folder containing the souce code)
+    java -jar BugLocatorII.jar -f
+    
+    
+Notes
+---
 
-3. Import project from external model -> Next -> Next -> Next -> Select location for java SDK 1.8 ->Finish
+The full analysis will take around 10 minutes. The short analysis omits the Eclipse system and is significantly faster (about 1 minute). To run a short analysis simply run the program without the -f option:
 
-4. Import needed libraries: File -> Project structure -> Libraries -> "+" (Add libraries) -> select (/bug-location/bin) -> Apply -> ok
+    java -jar BugLocatorII.jar
 
-5. Create the bug reports index:(/bug-location/src/java/buglocator/indexing/bug.reports/BuildBugReportIndexMain.java)-> Run 
+All the available options for the program can be viewed by using the -h option:
 
-6. Create souce code index:(/bug-location/src/java/buglocator/indexing/source.code/BuildSourceCodeIndexMain.java)-> Run
-
-7. Run the IR system: (/bug-location/src/java/evaluation/EvaluationMain.java)
-
-8. Result will be outputted to the console
+    java -jar BugLocatorII.jar -h
